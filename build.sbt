@@ -5,7 +5,7 @@ import wartremover.WartRemover.autoImport.wartremoverExcluded
 
 val appName: String = "direct-debit-update-email-backend"
 
-val appScalaVersion = "2.13.8"
+val appScalaVersion = "2.13.10"
 
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",

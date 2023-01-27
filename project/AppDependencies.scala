@@ -20,8 +20,7 @@ object AppDependencies {
     val compile = Seq(
       "uk.gov.hmrc"       %% s"internal-auth-client$playVersion" % "1.3.0",
       "uk.gov.hmrc"       %% s"bootstrap-backend$playVersion"    % bootstrapVersion,
-      "uk.gov.hmrc.mongo" %% s"hmrc-mongo$playVersion"           % hmrcMongoVersion,
-      "com.beachape"      %% "enumeratum"                        % enumeratumVersion,
+     "com.beachape"      %% "enumeratum"                        % enumeratumVersion,
       "org.typelevel"     %% "cats-core"                         % catsVersion
     )
 
