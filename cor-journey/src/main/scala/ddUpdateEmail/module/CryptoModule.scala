@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.module
 
-import com.google.inject.AbstractModule
+import ddUpdateEmail.crypto.Crypto
+import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
-class Module extends AbstractModule {
-
-  override def configure(): Unit = {
-
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+class CryptoModule extends Module {
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] =
+    Seq(
+      bind[Encrypter with Decrypter].to[Crypto]
+    )
 }

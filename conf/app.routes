@@ -1,3 +1,4 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.directdebitupdateemailbackend.controllers.MicroserviceHelloWorldController.hello
+POST   /bta/start            uk.gov.hmrc.directdebitupdateemailbackend.controllers.SjController.startBta
+POST   /epaye/start          uk.gov.hmrc.directdebitupdateemailbackend.controllers.SjController.startEpaye

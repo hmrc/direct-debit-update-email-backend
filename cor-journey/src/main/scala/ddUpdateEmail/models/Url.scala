@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.models
 
-import com.google.inject.AbstractModule
+import play.api.libs.json.{Format, Json}
 
-class Module extends AbstractModule {
+final case class BackUrl(value: String)
 
-  override def configure(): Unit = {
+object BackUrl {
+  implicit val format: Format[BackUrl] = Json.valueFormat
+}
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+final case class ReturnUrl(value: String)
+
+object ReturnUrl {
+  implicit val format: Format[ReturnUrl] = Json.valueFormat
+}
+
+final case class NextUrl(value: String)
+
+object NextUrl {
+  implicit val format: Format[NextUrl] = Json.valueFormat
 }

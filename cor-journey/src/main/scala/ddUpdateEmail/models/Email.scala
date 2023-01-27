@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.models
 
-import com.google.inject.AbstractModule
+import ddUpdateEmail.crypto.CryptoFormat
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-class Module extends AbstractModule {
+final case class Email(value: SensitiveString)
 
-  override def configure(): Unit = {
+object Email {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
+  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Email] = {
+    implicit val sensitiveStringFormat: Format[SensitiveString] = ddUpdateEmail.crypto.sensitiveStringFormat(cryptoFormat)
+    Json.valueFormat
   }
+
 }

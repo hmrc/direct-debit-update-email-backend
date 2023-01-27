@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.crypto
 
-import com.google.inject.AbstractModule
+import com.google.inject.{Inject, Singleton}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
-class Module extends AbstractModule {
+sealed trait CryptoFormat
 
-  override def configure(): Unit = {
+object CryptoFormat {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  @Singleton
+  final case class OperationalCryptoFormat @Inject() (crypto: Encrypter with Decrypter) extends CryptoFormat
+
+  case object NoOpCryptoFormat extends CryptoFormat
+
 }

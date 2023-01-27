@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.models.journey
 
-import com.google.inject.AbstractModule
+import ddUpdateEmail.models.{BackUrl, DDINumber, ReturnUrl}
+import play.api.libs.json.{Json, OFormat}
 
-class Module extends AbstractModule {
+final case class SjRequest(
+    ddiNumber: DDINumber,
+    backUrl:   BackUrl,
+    returnUrl: ReturnUrl
+)
 
-  override def configure(): Unit = {
+object SjRequest {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val format: OFormat[SjRequest] = Json.format
+
 }

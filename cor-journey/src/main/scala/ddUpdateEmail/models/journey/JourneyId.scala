@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.models.journey
 
-import com.google.inject.AbstractModule
+import play.api.libs.json.{Format, Json}
+import play.api.mvc.PathBindable
 
-class Module extends AbstractModule {
+final case class JourneyId(value: String)
 
-  override def configure(): Unit = {
+object JourneyId {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  implicit val format: Format[JourneyId] = Json.valueFormat
+
+  /**
+   * Allows JourneyId final case class to be used as a query parameter in controllers
+   */
+  implicit val journeyIdBinder: PathBindable[JourneyId] = ddUpdateEmail.utils.ValueClassBinder.valueClassBinder(_.value)
 }
+

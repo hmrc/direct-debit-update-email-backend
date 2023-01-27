@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.utils
 
-import com.google.inject.AbstractModule
+import enumeratum.{Enum, EnumEntry}
+import play.api.libs.json._
 
-class Module extends AbstractModule {
+object EnumFormat {
 
-  override def configure(): Unit = {
+  def apply[T <: EnumEntry](e: Enum[T]): Format[T] = Format(
+    Reads {
+      case JsString(value) =>
+        e.withNameOption(value)
+          .map[JsResult[T]](JsSuccess(_))
+          .getOrElse(JsError(s"Unknown ${e.getClass.getSimpleName} value: $value"))
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+      case _ =>
+        JsError("Can only parse String")
+    },
+    Writes(v => JsString(v.entryName))
+  )
+
 }

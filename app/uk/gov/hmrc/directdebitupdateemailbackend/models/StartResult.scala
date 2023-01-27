@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package uk.gov.hmrc.directdebitupdateemailbackend.models
 
-import com.google.inject.AbstractModule
+import ddUpdateEmail.models.NextUrl
 
-class Module extends AbstractModule {
+sealed trait StartResult
 
-  override def configure(): Unit = {
+object StartResult {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  case object NoSessionId extends StartResult
+
+  case object NoDirectDebitFound extends StartResult
+
+  case object TaxRegimeNotAllowed extends StartResult
+
+  case object IsNotBounced extends StartResult
+
+  final case class Started(nextUrl: NextUrl) extends StartResult
+
 }

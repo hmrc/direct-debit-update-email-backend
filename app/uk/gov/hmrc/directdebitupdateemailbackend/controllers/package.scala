@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package uk.gov.hmrc.directdebitupdateemailbackend
 
-import com.google.inject.AbstractModule
+import play.api.mvc.Result
 
-class Module extends AbstractModule {
+import scala.concurrent.Future
 
-  override def configure(): Unit = {
+package object controllers {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  implicit def toFuture(result: Result): Future[Result] = Future.successful(result)
+
 }

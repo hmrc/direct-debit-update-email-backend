@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 
-import com.google.inject.AbstractModule
+import play.api.libs.json.{JsObject, Json}
 
-class Module extends AbstractModule {
+object JsonSyntax extends JsonSyntax
 
-  override def configure(): Unit = {
+trait JsonSyntax {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
+  @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes", "org.wartremover.warts.PublicInference"))
+  implicit def toJsonOps(s: String) = new {
+    def asJson: JsObject = Json.parse(s) match {
+      case d: JsObject => d
+      case _           => throw new RuntimeException(s"Cant parse as JsObject: $s ")
+    }
   }
 }
+

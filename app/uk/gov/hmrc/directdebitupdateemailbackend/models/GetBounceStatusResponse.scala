@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package uk.gov.hmrc.directdebitupdateemailbackend.models
 
-import com.google.inject.AbstractModule
+import ddUpdateEmail.crypto.CryptoFormat
+import ddUpdateEmail.models.{Email, TaxRegime}
+import play.api.libs.json.{Json, OFormat}
 
-class Module extends AbstractModule {
+final case class GetBounceStatusResponse(
+    isBounced: Boolean,
+    email:     Email,
+    taxRegime: TaxRegime
+)
 
-  override def configure(): Unit = {
+object GetBounceStatusResponse {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[GetBounceStatusResponse] = Json.format
+
 }

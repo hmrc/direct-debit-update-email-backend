@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.models.journey
 
-import com.google.inject.AbstractModule
+import play.api.libs.json.{Format, Json}
 
-class Module extends AbstractModule {
+final case class SessionId(value: String)
 
-  override def configure(): Unit = {
+object SessionId {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  implicit val format: Format[SessionId] = Json.valueFormat
+
 }
+
