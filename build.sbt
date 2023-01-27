@@ -34,7 +34,6 @@ lazy val commonSettings = Seq[SettingsDefinition](
   update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
   shellPrompt := ShellPrompt(version.value),
   buildInfoPackage := name.value.toLowerCase().replaceAllLiterally("-", ""),
-  targetJvm := "jvm-1.8",
   Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
   scalaSettings,
   uk.gov.hmrc.DefaultBuildSettings.defaultSettings(),
