@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package uk.gov.hmrc.directdebitupdateemailbackend.services
 
-import com.google.inject.AbstractModule
+import ddUpdateEmail.models.journey.JourneyId
+import org.bson.types.ObjectId
 
-class Module extends AbstractModule {
+import javax.inject.Singleton
 
-  override def configure(): Unit = {
+@Singleton
+class JourneyIdGenerator {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+  def nextJourneyId(): JourneyId = JourneyId(ObjectId.get().toHexString)
+
 }

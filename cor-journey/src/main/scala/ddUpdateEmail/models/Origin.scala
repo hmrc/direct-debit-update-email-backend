@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package ddUpdateEmail.models
 
-import com.google.inject.AbstractModule
+import ddUpdateEmail.utils.EnumFormat
+import enumeratum.{Enum, EnumEntry}
+import play.api.libs.json.Format
 
-class Module extends AbstractModule {
+import scala.collection.immutable
 
-  override def configure(): Unit = {
+sealed trait Origin extends EnumEntry with Product with Serializable
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+object Origin extends Enum[Origin] {
+
+  implicit val format: Format[Origin] = EnumFormat(Origin)
+
+  case object BTA extends Origin
+
+  case object EpayeService extends Origin
+
+  override def values: immutable.IndexedSeq[Origin] = findValues
+
 }

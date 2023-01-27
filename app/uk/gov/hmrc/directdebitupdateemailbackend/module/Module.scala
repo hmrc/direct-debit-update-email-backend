@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.directdebitupdateemailbackend.config
+package uk.gov.hmrc.directdebitupdateemailbackend.module
 
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, Provides, Singleton}
+
+import java.time.Clock
 
 class Module extends AbstractModule {
 
-  override def configure(): Unit = {
+  @Provides
+  @Singleton
+  def provideClock(): Clock = Clock.systemUTC()
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
 }
