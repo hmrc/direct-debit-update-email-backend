@@ -42,7 +42,7 @@ object InternalAuthStub {
                |      "resourceType": "direct-debit-update-email-backend",
                |      "resourceLocation": "$internalAuthResourceLocation"
                |    },
-               |    "action": "READ"
+               |    "action": "WRITE"
                |  },
                |  "retrieve": [ ]
                |}

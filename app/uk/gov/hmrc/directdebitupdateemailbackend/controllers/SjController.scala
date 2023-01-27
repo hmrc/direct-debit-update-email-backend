@@ -40,7 +40,7 @@ class SjController @Inject() (
       resourceType     = ResourceType("direct-debit-update-email-backend"),
       resourceLocation = ResourceLocation(s"direct-debit-update-email/$origin/start")
     ),
-    action   = IAAction("READ")
+    action   = IAAction("WRITE")
   )
 
   private val btaPermission: Predicate.Permission = internalAuthPermission("bta")
