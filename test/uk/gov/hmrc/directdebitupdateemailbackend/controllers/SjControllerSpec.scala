@@ -28,8 +28,6 @@ import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.{InternalAuth
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{ItSpec, TestData}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
-//import scala.concurrent.ExecutionContext.Implicits.global
-
 class SjControllerSpec extends ItSpec {
 
   lazy val controller = app.injector.instanceOf[SjController]
