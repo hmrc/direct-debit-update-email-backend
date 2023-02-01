@@ -37,11 +37,11 @@ lazy val commonSettings = Seq[SettingsDefinition](
   Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
   scalaSettings,
   uk.gov.hmrc.DefaultBuildSettings.defaultSettings(),
-  ScalariformSettings.scalariformSettings,
   WartRemoverSettings.wartRemoverSettings,
   ScoverageSettings.scoverageSettings,
-  SbtUpdatesSettings.sbtUpdatesSettings
-)
+  SbtUpdatesSettings.sbtUpdatesSettings,
+  libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+) ++ ScalariformSettings.scalariformSettings
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)

@@ -16,26 +16,30 @@
 
 package ddUpdateEmail.models
 
-import cats.Eq
 import cats.syntax.eq._
-import ddUpdateEmail.crypto.CryptoFormat
-import play.api.libs.json.{Format, Json}
+
+import org.scalatest.freespec.AnyFreeSpecLike
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.RichMatchers
 
-import java.util.Locale
+class EmailSpec extends AnyFreeSpecLike
+  with RichMatchers {
 
-final case class Email(value: SensitiveString)
+  "Email" - {
 
-object Email {
+    "must have an Eq instance which" - {
 
-  implicit val eq: Eq[Email] = {
-      def toLowerCaseString(e: Email): String = e.value.decryptedValue.toLowerCase(Locale.UK)
-    Eq.instance{ case (e1, e2) => toLowerCaseString(e1) === toLowerCaseString(e2) }
-  }
+      "equates email addresses that the same" in {
+        Email(SensitiveString("email")) eqv Email(SensitiveString("email")) shouldBe true
+        Email(SensitiveString("email")) eqv Email(SensitiveString("email2")) shouldBe false
+      }
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Email] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] = ddUpdateEmail.crypto.sensitiveStringFormat(cryptoFormat)
-    Json.valueFormat
+      "is case-insensitive" in {
+        Email(SensitiveString("email")) eqv Email(SensitiveString("eMaIl")) shouldBe true
+      }
+
+    }
+
   }
 
 }

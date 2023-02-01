@@ -16,11 +16,18 @@
 
 package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 
-import ddUpdateEmail.models.{BackUrl, DDINumber, Email, ReturnUrl}
-import ddUpdateEmail.models.journey.{SessionId, SjRequest}
+import ddUpdateEmail.models.{BackUrl, DDINumber, Email, Origin, ReturnUrl, TaxRegime}
+import ddUpdateEmail.models.journey.{Journey, JourneyId, SessionId, SjRequest, Stage}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import uk.gov.hmrc.http.Authorization
+
+import java.time.{Instant, LocalDateTime, ZoneOffset}
 
 object TestData {
+
+  val bearerToken: Authorization = Authorization("Bearer 1234567841323231213")
+
+  val journeyId: JourneyId = JourneyId("b6217497-ab5b-4e93-855a-afc9f9e933b6")
 
   val sessionId: SessionId = SessionId("session-12345")
 
@@ -35,5 +42,38 @@ object TestData {
     BackUrl("/back"),
     ReturnUrl("/return")
   )
+
+  val selectedEmail: Email = Email(SensitiveString("selected@email.com"))
+
+  val createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
+
+  object Journeys {
+
+    def afterStarted(origin: Origin = Origin.BTA, taxRegime: TaxRegime = TaxRegime.Paye) =
+      Journey.Started(
+        journeyId,
+        origin,
+        createdOn,
+        sjRequest,
+        sessionId,
+        taxRegime,
+        bouncedEmail,
+        Stage.AfterStarted.Started
+      )
+
+    def afterSelectedEmail(selectedEmail: Email = selectedEmail, origin: Origin = Origin.BTA, taxRegime: TaxRegime = TaxRegime.Paye) =
+      Journey.SelectedEmail(
+        journeyId,
+        origin,
+        createdOn,
+        sjRequest,
+        sessionId,
+        taxRegime,
+        bouncedEmail,
+        Stage.AfterSelectedEmail.SelectedEmail,
+        selectedEmail
+      )
+
+  }
 
 }

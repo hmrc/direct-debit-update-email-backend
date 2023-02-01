@@ -19,6 +19,7 @@ package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 import akka.util.Timeout
 import com.google.inject.{AbstractModule, Provides}
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
+import ddUpdateEmail.models.journey.Journey
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -40,16 +41,25 @@ import scala.annotation.nowarn
 import scala.concurrent.duration._
 import scala.util.Random
 
+trait AppProvider {
+
+}
+
 trait ItSpec
   extends AnyFreeSpecLike
   with RichMatchers
   with GuiceOneServerPerSuite
   with WireMockSupport { self =>
+  private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
+
+  def insertJourneyForTest(journey: Journey): Unit = journeyRepo.upsert(journey).futureValue
+
+  implicit def hc: HeaderCarrier = HeaderCarrier(authorization = Some(TestData.bearerToken))
 
   override def beforeEach(): Unit = {
     super.beforeEach()
 
-    await(app.injector.instanceOf[JourneyRepo].collection.drop().toFuture())(Timeout(10.seconds))
+    await(journeyRepo.collection.drop().toFuture())(Timeout(10.seconds))
     ()
   }
 
@@ -105,10 +115,7 @@ trait ItSpec
 
   def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
 
-  implicit def hc: HeaderCarrier = HeaderCarrier()
-
   val testServerPort: Int = 19001
-  val baseUrl: String = s"http://localhost:${testServerPort.toString}"
   val databaseName: String = "direct-debit-update-email-backend-it"
 
   def conf: Map[String, Any] = Map(
@@ -117,6 +124,7 @@ trait ItSpec
     "microservice.services.direct-debit-update-email-backend.host" -> "localhost",
     "microservice.services.direct-debit-update-email-backend.port" -> testServerPort,
     "microservice.services.direct-debit-backend.port" -> WireMockSupport.port,
+    "microservice.services.auth.port" -> WireMockSupport.port,
     "microservice.services.internal-auth.port" -> WireMockSupport.port,
     "auditing.consumer.baseUri.port" -> WireMockSupport.port,
     "auditing.enabled" -> false,

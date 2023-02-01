@@ -45,4 +45,17 @@ object Stage {
     case object Started extends AfterStarted
   }
 
+  sealed trait AfterSelectedEmail extends Stage with EnumEntry
+
+  object AfterSelectedEmail extends Enum[AfterSelectedEmail] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val format: OFormat[AfterSelectedEmail] = derived.oformat[AfterSelectedEmail]()
+    val values: immutable.IndexedSeq[AfterSelectedEmail] = findValues
+
+    /**
+     * User has just selected email
+     */
+    case object SelectedEmail extends AfterSelectedEmail
+  }
+
 }
