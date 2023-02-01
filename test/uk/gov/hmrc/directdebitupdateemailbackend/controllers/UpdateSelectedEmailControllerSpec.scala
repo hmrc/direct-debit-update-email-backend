@@ -28,7 +28,7 @@ class UpdateSelectedEmailControllerSpec extends ItSpec {
 
   lazy val journeyConnector = app.injector.instanceOf[JourneyConnector]
 
-  "Requests to update the selected email" - {
+  "GET /journey/:journeyId/update-selected-email" - {
 
     "must return an 401 (UNAUTHORIZED) if no bearer token is presented" in {
       val result = journeyConnector.updateSelectedEmail(TestData.journeyId, TestData.selectedEmail)(HeaderCarrier())
