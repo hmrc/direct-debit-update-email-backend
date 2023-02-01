@@ -41,10 +41,6 @@ import scala.annotation.nowarn
 import scala.concurrent.duration._
 import scala.util.Random
 
-trait AppProvider {
-
-}
-
 trait ItSpec
   extends AnyFreeSpecLike
   with RichMatchers
