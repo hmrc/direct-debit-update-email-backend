@@ -16,26 +16,12 @@
 
 package ddUpdateEmail.models
 
-import cats.Eq
-import cats.syntax.eq._
-import ddUpdateEmail.crypto.CryptoFormat
 import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-import java.util.Locale
+final case class GGCredId(value: String) extends AnyVal
 
-final case class Email(value: SensitiveString)
+object GGCredId {
 
-object Email {
-
-  implicit val eq: Eq[Email] = {
-      def toLowerCaseString(e: Email): String = e.value.decryptedValue.toLowerCase(Locale.UK)
-    Eq.instance{ case (e1, e2) => toLowerCaseString(e1) === toLowerCaseString(e2) }
-  }
-
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Email] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] = ddUpdateEmail.crypto.sensitiveStringFormat(cryptoFormat)
-    Json.valueFormat
-  }
+  implicit val format: Format[GGCredId] = Json.valueFormat
 
 }

@@ -18,7 +18,8 @@ package ddUpdateEmail.connectors
 
 import com.google.inject.{Inject, Singleton}
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
-import ddUpdateEmail.models.journey.Journey
+import ddUpdateEmail.models.Email
+import ddUpdateEmail.models.journey.{Journey, JourneyId}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -36,5 +37,11 @@ class JourneyConnector @Inject() (httpClient: HttpClient, servicesConfig: Servic
       result <- httpClient.GET[Option[Journey]](s"$baseUrl/direct-debit-update-email/journey/find-latest-by-session-id")
     } yield result
   }
+
+  def updateSelectedEmail(journeyId: JourneyId, selectedEmail: Email)(implicit hc: HeaderCarrier): Future[Journey] =
+    httpClient.POST[Email, Journey](
+      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/update-selected-email",
+      selectedEmail
+    )
 
 }

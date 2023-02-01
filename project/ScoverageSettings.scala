@@ -17,7 +17,7 @@ object ScoverageSettings {
   )
 
   private val excludedFiles: Seq[String] = Seq(
-     "*JourneyIdGenerator", "*module.Module"
+    "*JourneyIdGenerator", "*module.Module"
   )
 
   val scoverageSettings: Seq[Setting[_]] = Seq(

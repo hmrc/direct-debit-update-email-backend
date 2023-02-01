@@ -18,7 +18,6 @@ package ddUpdateEmail.models.journey
 
 import ddUpdateEmail.crypto.CryptoFormat
 import ddUpdateEmail.models.{Email, Origin, TaxRegime}
-import ddUpdateEmail.utils.Errors
 import julienrf.json.derived
 import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -34,7 +33,7 @@ sealed trait Journey {
   val sessionId: SessionId
   val taxRegime: TaxRegime
   val bouncedEmail: Email
-
+  val stage: Stage
 }
 
 object Journey {
@@ -64,24 +63,10 @@ object Journey {
 
   }
 
-  /**
-   * Marking trait for selecting journey in stage
-   */
-  sealed trait JourneyStage extends Journey {
-    def stage: Stage
-  }
+  sealed trait BeforeSelectedEmail extends Journey
 
-  object JourneyStage {
-
-    private val sanityMessage = "Sanity check just in case if you messed journey traits up"
-
-    sealed trait Started
-      extends Journey
-      with JourneyStage {
-      Errors.sanityCheck(Stage.AfterStarted.values.contains(stage), sanityMessage)
-      val stage: Stage.AfterStarted
-    }
-
+  sealed trait AfterSelectedEmail extends Journey {
+    val selectedEmail: Email
   }
 
   final case class Started(
@@ -93,7 +78,21 @@ object Journey {
       override val taxRegime:    TaxRegime,
       override val bouncedEmail: Email,
       override val stage:        Stage.AfterStarted
-  ) extends Journey with JourneyStage.Started
+  ) extends Journey
+    with BeforeSelectedEmail
+
+  final case class SelectedEmail(
+      override val _id:           JourneyId,
+      override val origin:        Origin,
+      override val createdOn:     Instant,
+      override val sjRequest:     SjRequest,
+      override val sessionId:     SessionId,
+      override val taxRegime:     TaxRegime,
+      override val bouncedEmail:  Email,
+      override val stage:         Stage.AfterSelectedEmail,
+      override val selectedEmail: Email
+  ) extends Journey
+    with AfterSelectedEmail
 
 }
 

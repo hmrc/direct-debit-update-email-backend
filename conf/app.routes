@@ -4,4 +4,6 @@ POST   /bta/start            uk.gov.hmrc.directdebitupdateemailbackend.controlle
 POST   /epaye/start          uk.gov.hmrc.directdebitupdateemailbackend.controllers.SjController.startEpaye
 
 
-GET   /journey/find-latest-by-session-id   uk.gov.hmrc.directdebitupdateemailbackend.controllers.JourneyController.findLatestJourneyBySessionId
+GET   /journey/find-latest-by-session-id              uk.gov.hmrc.directdebitupdateemailbackend.controllers.JourneyController.findLatestJourneyBySessionId
+
+POST /journey/:journeyId/update-selected-email        uk.gov.hmrc.directdebitupdateemailbackend.controllers.UpdateSelectedEmailController.updateSelectedEmail(journeyId: ddUpdateEmail.models.journey.JourneyId)
