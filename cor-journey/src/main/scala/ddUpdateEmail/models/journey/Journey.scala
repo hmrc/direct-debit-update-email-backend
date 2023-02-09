@@ -17,7 +17,7 @@
 package ddUpdateEmail.models.journey
 
 import ddUpdateEmail.crypto.CryptoFormat
-import ddUpdateEmail.models.{Email, Origin, TaxRegime}
+import ddUpdateEmail.models.{Email, EmailVerificationResult, Origin, StartEmailVerificationJourneyResult, TaxRegime}
 import julienrf.json.derived
 import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -33,7 +33,6 @@ sealed trait Journey {
   val sessionId: SessionId
   val taxRegime: TaxRegime
   val bouncedEmail: Email
-  val stage: Stage
 }
 
 object Journey {
@@ -69,6 +68,18 @@ object Journey {
     val selectedEmail: Email
   }
 
+  sealed trait BeforeEmailVerificationJourneyStarted extends Journey
+
+  sealed trait AfterEmailVerificationJourneyStarted extends Journey {
+    val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult
+  }
+
+  sealed trait BeforeEmailVerificationResult extends Journey
+
+  sealed trait AfterEmailVerificationResult extends Journey {
+    val emailVerificationResult: EmailVerificationResult
+  }
+
   final case class Started(
       override val _id:          JourneyId,
       override val origin:       Origin,
@@ -76,10 +87,11 @@ object Journey {
       override val sjRequest:    SjRequest,
       override val sessionId:    SessionId,
       override val taxRegime:    TaxRegime,
-      override val bouncedEmail: Email,
-      override val stage:        Stage.AfterStarted
+      override val bouncedEmail: Email
   ) extends Journey
     with BeforeSelectedEmail
+    with BeforeEmailVerificationJourneyStarted
+    with BeforeEmailVerificationResult
 
   final case class SelectedEmail(
       override val _id:           JourneyId,
@@ -89,10 +101,42 @@ object Journey {
       override val sessionId:     SessionId,
       override val taxRegime:     TaxRegime,
       override val bouncedEmail:  Email,
-      override val stage:         Stage.AfterSelectedEmail,
       override val selectedEmail: Email
   ) extends Journey
     with AfterSelectedEmail
+    with BeforeEmailVerificationJourneyStarted
+    with BeforeEmailVerificationResult
+
+  final case class EmailVerificationJourneyStarted(
+      override val _id:                                 JourneyId,
+      override val origin:                              Origin,
+      override val createdOn:                           Instant,
+      override val sjRequest:                           SjRequest,
+      override val sessionId:                           SessionId,
+      override val taxRegime:                           TaxRegime,
+      override val bouncedEmail:                        Email,
+      override val selectedEmail:                       Email,
+      override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult
+  ) extends Journey
+    with AfterSelectedEmail
+    with AfterEmailVerificationJourneyStarted
+    with BeforeEmailVerificationResult
+
+  final case class ObtainedEmailVerificationResult(
+      override val _id:                                 JourneyId,
+      override val origin:                              Origin,
+      override val createdOn:                           Instant,
+      override val sjRequest:                           SjRequest,
+      override val sessionId:                           SessionId,
+      override val taxRegime:                           TaxRegime,
+      override val bouncedEmail:                        Email,
+      override val selectedEmail:                       Email,
+      override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult,
+      override val emailVerificationResult:             EmailVerificationResult
+  ) extends Journey
+    with AfterSelectedEmail
+    with AfterEmailVerificationJourneyStarted
+    with AfterEmailVerificationResult
 
 }
 

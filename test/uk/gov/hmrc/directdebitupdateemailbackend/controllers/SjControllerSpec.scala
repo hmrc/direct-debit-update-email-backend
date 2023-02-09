@@ -18,7 +18,7 @@ package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
 import akka.stream.Materializer
 import ddUpdateEmail.models.{Origin, TaxRegime}
-import ddUpdateEmail.models.journey.{Journey, Stage}
+import ddUpdateEmail.models.journey.Journey
 import play.api.libs.json.{JsNull, JsNumber, JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -211,8 +211,7 @@ class SjControllerSpec extends ItSpec {
                   TestData.sjRequest,
                   TestData.sessionId,
                   TaxRegime.Paye,
-                  TestData.bouncedEmail,
-                  Stage.AfterStarted.Started
+                  TestData.bouncedEmail
                 )
               )
 

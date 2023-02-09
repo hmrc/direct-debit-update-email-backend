@@ -18,7 +18,7 @@ package ddUpdateEmail.connectors
 
 import com.google.inject.{Inject, Singleton}
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
-import ddUpdateEmail.models.Email
+import ddUpdateEmail.models.{Email, EmailVerificationResult, StartEmailVerificationJourneyResult}
 import ddUpdateEmail.models.journey.{Journey, JourneyId}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -40,8 +40,20 @@ class JourneyConnector @Inject() (httpClient: HttpClient, servicesConfig: Servic
 
   def updateSelectedEmail(journeyId: JourneyId, selectedEmail: Email)(implicit hc: HeaderCarrier): Future[Journey] =
     httpClient.POST[Email, Journey](
-      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/update-selected-email",
+      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/selected-email",
       selectedEmail
+    )
+
+  def updateStartEmailVerificationJourneyResult(journeyId: JourneyId, result: StartEmailVerificationJourneyResult)(implicit hc: HeaderCarrier): Future[Journey] =
+    httpClient.POST[StartEmailVerificationJourneyResult, Journey](
+      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/start-verification-journey-result",
+      result
+    )
+
+  def updateEmailVerificationResult(journeyId: JourneyId, result: EmailVerificationResult)(implicit hc: HeaderCarrier): Future[Journey] =
+    httpClient.POST[EmailVerificationResult, Journey](
+      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/email-verification-result",
+      result
     )
 
 }

@@ -19,7 +19,7 @@ package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 import com.google.inject.Inject
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
 import ddUpdateEmail.models.Email
-import ddUpdateEmail.models.journey.{Journey, JourneyId, Stage}
+import ddUpdateEmail.models.journey.{Journey, JourneyId}
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.directdebitupdateemailbackend.actions.Actions
@@ -32,7 +32,7 @@ class UpdateSelectedEmailController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateSelectedEmail(journeyId: JourneyId): Action[Email] =
     actions.authenticatedAction.async(parse.json[Email]){ implicit request =>
@@ -49,7 +49,6 @@ class UpdateSelectedEmailController @Inject() (
     val newJourney: Journey = journey match {
       case j: Journey.Started =>
         j.into[Journey.SelectedEmail]
-          .withFieldConst(_.stage, Stage.AfterSelectedEmail.SelectedEmail)
           .withFieldConst(_.selectedEmail, selectedEmail)
           .transform
     }
@@ -60,7 +59,16 @@ class UpdateSelectedEmailController @Inject() (
   private def updateJourneyWithExistingValue(journey: Journey.AfterSelectedEmail, selectedEmail: Email): Future[Journey] = {
     // don't check to see if email is same to allow for passcodes to be requested again for same email
     val newJourney = journey match {
-      case j: Journey.SelectedEmail => j.copy(selectedEmail = selectedEmail)
+      case j: Journey.SelectedEmail =>
+        j.copy(selectedEmail = selectedEmail)
+      case j: Journey.EmailVerificationJourneyStarted =>
+        j.into[Journey.SelectedEmail]
+          .withFieldConst(_.selectedEmail, selectedEmail)
+          .transform
+      case j: Journey.ObtainedEmailVerificationResult =>
+        j.into[Journey.SelectedEmail]
+          .withFieldConst(_.selectedEmail, selectedEmail)
+          .transform
     }
 
     journeyService.upsert(newJourney)
