@@ -45,12 +45,13 @@ trait ItSpec
   extends AnyFreeSpecLike
   with RichMatchers
   with GuiceOneServerPerSuite
-  with WireMockSupport { self =>
+  with WireMockSupport
+  with CommonBehaviour { self =>
   private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
   def insertJourneyForTest(journey: Journey): Unit = journeyRepo.upsert(journey).futureValue
 
-  implicit def hc: HeaderCarrier = HeaderCarrier(authorization = Some(TestData.bearerToken))
+  implicit def hcWithAuthorization: HeaderCarrier = HeaderCarrier(authorization = Some(TestData.bearerToken))
 
   override def beforeEach(): Unit = {
     super.beforeEach()

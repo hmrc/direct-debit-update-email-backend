@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 
-import ddUpdateEmail.models.{BackUrl, DDINumber, Email, Origin, ReturnUrl, TaxRegime}
-import ddUpdateEmail.models.journey.{Journey, JourneyId, SessionId, SjRequest, Stage}
+import ddUpdateEmail.models.{BackUrl, DDINumber, Email, EmailVerificationResult, Origin, ReturnUrl, StartEmailVerificationJourneyResult, TaxRegime}
+import ddUpdateEmail.models.journey.{Journey, JourneyId, SessionId, SjRequest}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.Authorization
 
@@ -47,6 +47,8 @@ object TestData {
 
   val createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
 
+  val emailVerificationRedirectUrl = "/redirect"
+
   object Journeys {
 
     def afterStarted(origin: Origin = Origin.BTA, taxRegime: TaxRegime = TaxRegime.Paye) =
@@ -57,8 +59,7 @@ object TestData {
         sjRequest,
         sessionId,
         taxRegime,
-        bouncedEmail,
-        Stage.AfterStarted.Started
+        bouncedEmail
       )
 
     def afterSelectedEmail(selectedEmail: Email = selectedEmail, origin: Origin = Origin.BTA, taxRegime: TaxRegime = TaxRegime.Paye) =
@@ -70,8 +71,44 @@ object TestData {
         sessionId,
         taxRegime,
         bouncedEmail,
-        Stage.AfterSelectedEmail.SelectedEmail,
         selectedEmail
+      )
+
+    def afterEmailVerificationJourneyStarted(
+        startVerificationResult: StartEmailVerificationJourneyResult = StartEmailVerificationJourneyResult.Ok(emailVerificationRedirectUrl),
+        selectedEmail:           Email                               = selectedEmail,
+        origin:                  Origin                              = Origin.BTA,
+        taxRegime:               TaxRegime                           = TaxRegime.Paye
+    ) =
+      Journey.EmailVerificationJourneyStarted(
+        journeyId,
+        origin,
+        createdOn,
+        sjRequest,
+        sessionId,
+        taxRegime,
+        bouncedEmail,
+        selectedEmail,
+        startVerificationResult
+      )
+
+    def afterEmailVerificationResult(
+        result:        EmailVerificationResult = EmailVerificationResult.Verified,
+        selectedEmail: Email                   = selectedEmail,
+        origin:        Origin                  = Origin.BTA,
+        taxRegime:     TaxRegime               = TaxRegime.Paye
+    ) =
+      Journey.ObtainedEmailVerificationResult(
+        journeyId,
+        origin,
+        createdOn,
+        sjRequest,
+        sessionId,
+        taxRegime,
+        bouncedEmail,
+        selectedEmail,
+        StartEmailVerificationJourneyResult.Ok(emailVerificationRedirectUrl),
+        result
       )
 
   }
