@@ -72,7 +72,7 @@ class StartService @Inject() (
       journeyIdGenerator.nextJourneyId(),
       origin,
       createdOn = Instant.now(clock),
-      sjRequest, sessionId, status.taxRegime, status.email
+      sjRequest, sessionId, status.taxRegime, status.taxId, status.email
     )
 
     journeyRepo.upsert(journey)
