@@ -17,18 +17,36 @@
 package uk.gov.hmrc.directdebitupdateemailbackend.models
 
 import ddUpdateEmail.crypto.CryptoFormat
-import ddUpdateEmail.models.{Email, TaxRegime}
-import play.api.libs.json.{Json, OFormat}
+import ddUpdateEmail.models.TaxId.{EmpRef, Vrn, Zppt, Zsdl}
+import ddUpdateEmail.models.{Email, TaxId, TaxRegime}
+import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 
 final case class GetBounceStatusResponse(
     isBounced: Boolean,
     email:     Email,
-    taxRegime: TaxRegime
+    taxRegime: TaxRegime,
+    taxId:     Option[TaxId]
 )
 
 object GetBounceStatusResponse {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[GetBounceStatusResponse] = Json.format
+  implicit def reads(implicit cryptoFormat: CryptoFormat): Reads[GetBounceStatusResponse] = {
+    implicit val taxIdReads: Reads[TaxId] =
+      Reads { jsValue =>
+        for {
+          value <- (jsValue \ "value").validate[String]
+          typeString <- (jsValue \ "type").validate[String]
+          taxId <- typeString match {
+            case "vrn"    => JsSuccess(Vrn(value))
+            case "empref" => JsSuccess(EmpRef(value))
+            case "zppt"   => JsSuccess(Zppt(value))
+            case "zsdl"   => JsSuccess(Zsdl(value))
+            case other    => JsError(s"Unrecognised type type '$other'")
+          }
+        } yield taxId
+      }
+    Json.reads
+  }
 
 }

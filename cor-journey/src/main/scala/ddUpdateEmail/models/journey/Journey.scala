@@ -17,7 +17,7 @@
 package ddUpdateEmail.models.journey
 
 import ddUpdateEmail.crypto.CryptoFormat
-import ddUpdateEmail.models.{Email, EmailVerificationResult, Origin, StartEmailVerificationJourneyResult, TaxRegime}
+import ddUpdateEmail.models.{Email, EmailVerificationResult, Origin, StartEmailVerificationJourneyResult, TaxId, TaxRegime}
 import julienrf.json.derived
 import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -32,6 +32,7 @@ sealed trait Journey {
   val sjRequest: SjRequest
   val sessionId: SessionId
   val taxRegime: TaxRegime
+  val taxId: Option[TaxId]
   val bouncedEmail: Email
 }
 
@@ -87,6 +88,7 @@ object Journey {
       override val sjRequest:    SjRequest,
       override val sessionId:    SessionId,
       override val taxRegime:    TaxRegime,
+      override val taxId:        Option[TaxId],
       override val bouncedEmail: Email
   ) extends Journey
     with BeforeSelectedEmail
@@ -100,6 +102,7 @@ object Journey {
       override val sjRequest:     SjRequest,
       override val sessionId:     SessionId,
       override val taxRegime:     TaxRegime,
+      override val taxId:         Option[TaxId],
       override val bouncedEmail:  Email,
       override val selectedEmail: Email
   ) extends Journey
@@ -114,6 +117,7 @@ object Journey {
       override val sjRequest:                           SjRequest,
       override val sessionId:                           SessionId,
       override val taxRegime:                           TaxRegime,
+      override val taxId:                               Option[TaxId],
       override val bouncedEmail:                        Email,
       override val selectedEmail:                       Email,
       override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult
@@ -129,6 +133,7 @@ object Journey {
       override val sjRequest:                           SjRequest,
       override val sessionId:                           SessionId,
       override val taxRegime:                           TaxRegime,
+      override val taxId:                               Option[TaxId],
       override val bouncedEmail:                        Email,
       override val selectedEmail:                       Email,
       override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult,

@@ -54,6 +54,7 @@ class JourneyControllerSpec extends ItSpec {
         SjRequest(DDINumber("12345"), BackUrl("/"), ReturnUrl("/")),
         TestData.sessionId,
         TaxRegime.Paye,
+        None,
         Email(SensitiveString("email@test.com"))
       )
 

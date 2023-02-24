@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 
-import ddUpdateEmail.models.{BackUrl, DDINumber, Email, EmailVerificationResult, Origin, ReturnUrl, StartEmailVerificationJourneyResult, TaxRegime}
+import ddUpdateEmail.models.{BackUrl, DDINumber, Email, EmailVerificationResult, Origin, ReturnUrl, StartEmailVerificationJourneyResult, TaxId, TaxRegime}
 import ddUpdateEmail.models.journey.{Journey, JourneyId, SessionId, SjRequest}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.Authorization
@@ -43,6 +43,8 @@ object TestData {
     ReturnUrl("/return")
   )
 
+  val taxId: TaxId = TaxId.EmpRef("12345")
+
   val selectedEmail: Email = Email(SensitiveString("selected@email.com"))
 
   val createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
@@ -59,6 +61,7 @@ object TestData {
         sjRequest,
         sessionId,
         taxRegime,
+        Some(taxId),
         bouncedEmail
       )
 
@@ -70,6 +73,7 @@ object TestData {
         sjRequest,
         sessionId,
         taxRegime,
+        Some(taxId),
         bouncedEmail,
         selectedEmail
       )
@@ -87,6 +91,7 @@ object TestData {
         sjRequest,
         sessionId,
         taxRegime,
+        Some(taxId),
         bouncedEmail,
         selectedEmail,
         startVerificationResult
@@ -105,6 +110,7 @@ object TestData {
         sjRequest,
         sessionId,
         taxRegime,
+        Some(taxId),
         bouncedEmail,
         selectedEmail,
         StartEmailVerificationJourneyResult.Ok(emailVerificationRedirectUrl),
