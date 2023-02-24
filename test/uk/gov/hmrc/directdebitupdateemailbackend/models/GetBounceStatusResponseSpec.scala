@@ -25,6 +25,8 @@ import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{RichMatchers, Test
 
 class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
 
+  implicit val cryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+
   "GetBounceStatusResponse " - {
 
     List(
@@ -36,8 +38,6 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
         case (taxRegimeString, expectedTaxRegime, taxIdType, expectedTaxId) =>
 
           s"must be able to read for taxRegime=$taxRegimeString and taxIdType=$taxIdType" in {
-            implicit val cryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
-
             val json = Json.parse(
               s"""{
                |  "isBounced": true,
@@ -58,7 +58,26 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
               )
             )
           }
+
       }
+
+    "must be able to read when there is no taxId in the response" in {
+      val json = Json.parse(
+        s"""{
+           |  "isBounced": false,
+           |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
+           |  "taxRegime": "paye"
+           |}""".stripMargin
+      )
+      json.validate[GetBounceStatusResponse] shouldBe JsSuccess(
+        GetBounceStatusResponse(
+          false,
+          TestData.bouncedEmail,
+          TaxRegime.Paye,
+          None
+        )
+      )
+    }
 
   }
 
