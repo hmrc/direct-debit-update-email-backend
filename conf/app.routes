@@ -1,9 +1,8 @@
 # microservice specific routes
 
-POST   /bta/start            uk.gov.hmrc.directdebitupdateemailbackend.controllers.SjController.startBta
-POST   /epaye/start          uk.gov.hmrc.directdebitupdateemailbackend.controllers.SjController.startEpaye
+POST    /bta/start                                  uk.gov.hmrc.directdebitupdateemailbackend.controllers.SjController.startBta
+POST    /epaye/start                                uk.gov.hmrc.directdebitupdateemailbackend.controllers.SjController.startEpaye
 
+GET     /journey/find-latest-by-session-id          uk.gov.hmrc.directdebitupdateemailbackend.controllers.JourneyController.findLatestJourneyBySessionId
 
-GET   /journey/find-latest-by-session-id              uk.gov.hmrc.directdebitupdateemailbackend.controllers.JourneyController.findLatestJourneyBySessionId
-
-POST /journey/:journeyId/update-selected-email        uk.gov.hmrc.directdebitupdateemailbackend.controllers.UpdateSelectedEmailController.updateSelectedEmail(journeyId: ddUpdateEmail.models.journey.JourneyId)
+POST    /journey/:journeyId/update-selected-email   uk.gov.hmrc.directdebitupdateemailbackend.controllers.UpdateSelectedEmailController.updateSelectedEmail(journeyId: ddUpdateEmail.models.journey.JourneyId)
