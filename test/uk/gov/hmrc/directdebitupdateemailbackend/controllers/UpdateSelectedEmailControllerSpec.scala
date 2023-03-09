@@ -22,32 +22,16 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.AuthStub
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{ItSpec, TestData}
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 class UpdateSelectedEmailControllerSpec extends ItSpec {
 
   lazy val journeyConnector = app.injector.instanceOf[JourneyConnector]
 
-  "GET /journey/:journeyId/update-selected-email" - {
+  "POST /journey/:journeyId/selected-email" - {
 
-    "must return an 401 (UNAUTHORIZED) if no bearer token is presented" in {
-      val result = journeyConnector.updateSelectedEmail(TestData.journeyId, TestData.selectedEmail)(HeaderCarrier())
-
-      val exception = intercept[UpstreamErrorResponse](await(result))
-      exception.statusCode shouldBe UNAUTHORIZED
-
-      AuthStub.ensureAuthoriseNotCalled()
-    }
-
-    "must return an error if no journey can be found the given journey id" in {
-      AuthStub.authorise()
-      val result = journeyConnector.updateSelectedEmail(TestData.journeyId, TestData.selectedEmail)
-
-      val exception = intercept[UpstreamErrorResponse](await(result))
-      exception.statusCode shouldBe NOT_FOUND
-      exception.getMessage() should include("Could not find journey")
-      AuthStub.ensureAuthoriseCalled()
-    }
+    behave like authenticatedJourneyEndpointBehaviour(
+      journeyConnector.updateSelectedEmail(TestData.journeyId, TestData.selectedEmail)(_)
+    )
 
     "must update the journey when the journey is before an email had been selected" in {
       AuthStub.authorise()

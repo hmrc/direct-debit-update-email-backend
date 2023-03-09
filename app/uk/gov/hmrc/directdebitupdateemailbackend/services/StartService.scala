@@ -18,7 +18,7 @@ package uk.gov.hmrc.directdebitupdateemailbackend.services
 
 import com.google.inject.{Inject, Singleton}
 import ddUpdateEmail.models.{NextUrl, Origin}
-import ddUpdateEmail.models.journey.{Journey, SessionId, SjRequest, Stage}
+import ddUpdateEmail.models.journey.{Journey, SessionId, SjRequest}
 import uk.gov.hmrc.directdebitupdateemailbackend.config.AppConfig
 import uk.gov.hmrc.directdebitupdateemailbackend.models.{GetBounceStatusResponse, StartResult}
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.JourneyRepo
@@ -72,8 +72,7 @@ class StartService @Inject() (
       journeyIdGenerator.nextJourneyId(),
       origin,
       createdOn = Instant.now(clock),
-      sjRequest, sessionId, status.taxRegime, status.email,
-      Stage.AfterStarted.Started
+      sjRequest, sessionId, status.taxRegime, status.taxId, status.email
     )
 
     journeyRepo.upsert(journey)

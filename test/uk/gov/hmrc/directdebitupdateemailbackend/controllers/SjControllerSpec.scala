@@ -17,14 +17,15 @@
 package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
 import akka.stream.Materializer
+import ddUpdateEmail.models.TaxId.EmpRef
 import ddUpdateEmail.models.{Origin, TaxRegime}
-import ddUpdateEmail.models.journey.{Journey, Stage}
+import ddUpdateEmail.models.journey.Journey
 import play.api.libs.json.{JsNull, JsNumber, JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.JourneyRepo
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.FakeRequestUtils.FakeRequestOps
-import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.{InternalAuthStub, DirectDebitBackendStub}
+import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.{DirectDebitBackendStub, InternalAuthStub}
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{ItSpec, TestData}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
@@ -183,6 +184,7 @@ class SjControllerSpec extends ItSpec {
               }
 
             "return a 201 (CREATED) if session has been created" in {
+              val empRef = EmpRef("12345")
               InternalAuthStub.authorise()
               DirectDebitBackendStub.stubGetBouncedEmailStatus(
                 TestData.ddiNumber,
@@ -191,7 +193,11 @@ class SjControllerSpec extends ItSpec {
                   s"""{
                      |  "isBounced": true,
                      |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
-                     |  "taxRegime": "paye"
+                     |  "taxRegime": "paye",
+                     |  "taxId": {
+                     |    "type": "empref",
+                     |    "value": "${empRef.value}"
+                     |  }
                      |}""".stripMargin
                 ))
               )
@@ -211,8 +217,8 @@ class SjControllerSpec extends ItSpec {
                   TestData.sjRequest,
                   TestData.sessionId,
                   TaxRegime.Paye,
-                  TestData.bouncedEmail,
-                  Stage.AfterStarted.Started
+                  Some(empRef),
+                  TestData.bouncedEmail
                 )
               )
 

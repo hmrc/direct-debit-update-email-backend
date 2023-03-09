@@ -18,7 +18,7 @@ package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
 import ddUpdateEmail.connectors.JourneyConnector
 import ddUpdateEmail.models.{BackUrl, DDINumber, Email, Origin, ReturnUrl, TaxRegime}
-import ddUpdateEmail.models.journey.{Journey, SessionId, SjRequest, Stage}
+import ddUpdateEmail.models.journey.{Journey, SessionId, SjRequest}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{SessionId => HttpSessionId}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -54,8 +54,8 @@ class JourneyControllerSpec extends ItSpec {
         SjRequest(DDINumber("12345"), BackUrl("/"), ReturnUrl("/")),
         TestData.sessionId,
         TaxRegime.Paye,
-        Email(SensitiveString("email@test.com")),
-        Stage.AfterStarted.Started
+        None,
+        Email(SensitiveString("email@test.com"))
       )
 
       // same session id, created later
