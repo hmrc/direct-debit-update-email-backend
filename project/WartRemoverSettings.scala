@@ -14,7 +14,8 @@ object WartRemoverSettings {
         Wart.Nothing,
         Wart.Overloading,
         Wart.Throw,
-        Wart.ToString
+        Wart.ToString,
+        Wart.FinalVal // chimney's type class 'TransformerOps.into' uses final def
       ),
       Test / compile / wartremoverErrors --= Seq(
         Wart.Any,

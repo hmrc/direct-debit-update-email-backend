@@ -16,7 +16,7 @@ the frontend. We have coined the term `cor` for these modules - `collection of r
 ## Contents
 
 * [Dictionary](https://www.github.com/hmrc/direct-debit-update-email-backend#dictionary)
-* [Current supported tax regimes]
+* [Current supported tax regimes](https://www.github.com/hmrc/direct-debit-update-email-backend#current-supported-tax-regimes)
 * [Running the service locally](https://github.com/hmrc/direct-debit-update-email-backend#running-the-service-locally)
 * [Running tests](https://github.com/hmrc/direct-debit-update-email-backend#running-tests)
 * [Developing locally](https://github.com/hmrc/direct-debit-update-email-backend#developing-locally)
@@ -80,5 +80,4 @@ to create a snapshot version of backend locally (e.g. `0.3.0-SNAPSHOT`) then use
 
 ### License
 
-This code is open source software licensed under
-the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

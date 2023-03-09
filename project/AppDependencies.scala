@@ -7,20 +7,20 @@ object AppDependencies {
 
   private val playVersion = s"-play-28"
 
-  private val bootstrapVersion = "7.13.0"
-  private val hmrcMongoVersion = "0.74.0"
+  private val bootstrapVersion = "7.14.0"
+  private val hmrcMongoVersion = "1.1.0"
   private val enumeratumVersion = "1.7.0"
   private val catsVersion = "2.9.0"
   private val cryptoVersion = "7.3.0"
   private val hmrcJsonEncryptionVersion = "5.1.0-play-28"
   private val playJsonDerivedCodesVersion = "7.0.0"
-  private val chimneyVersion = "0.6.2"
+  private val chimneyVersion = "0.7.1"
 
   lazy val microserviceDependencies: Seq[ModuleID] = {
 
     val compile = Seq(
       // format: OFF
-      "uk.gov.hmrc"          %% s"internal-auth-client$playVersion" % "1.3.0",
+      "uk.gov.hmrc"          %% s"internal-auth-client$playVersion" % "1.4.0",
       "uk.gov.hmrc"          %% s"bootstrap-backend$playVersion"    % bootstrapVersion,
       "com.beachape"         %% "enumeratum"                        % enumeratumVersion,
       "io.scalaland"         %% "chimney"                           % chimneyVersion
