@@ -57,7 +57,7 @@ If running locally, the service runs on port `10802`
 
 ### Running tests
 
-You can run the unit/integration tests locally using sbt: sbt test
+You can run the unit/integration tests locally using sbt: `sbt test`
 
 To run a specific spec, run `sbt 'testOnly *<SpecName>'`, e.g. `sbt 'testOnly *JourneyControllerSpec'`
 

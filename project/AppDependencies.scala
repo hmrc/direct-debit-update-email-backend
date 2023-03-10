@@ -49,7 +49,6 @@ object AppDependencies {
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo$playVersion" % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc" %% "json-encryption" % hmrcJsonEncryptionVersion,
     "uk.gov.hmrc" %% s"crypto-json$playVersion" % AppDependencies.cryptoVersion,
-    "uk.gov.hmrc" %% "crypto" % AppDependencies.cryptoVersion,
     "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
     "com.beachape" %% "enumeratum-play" % AppDependencies.enumeratumVersion,
     "org.julienrf" %% "play-json-derived-codecs" % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
