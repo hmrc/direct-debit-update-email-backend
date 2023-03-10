@@ -1,8 +1,9 @@
 
 # direct-debit-update-email-backend
 
-This service is built using Scala (2.13.10) and the Play framework (2.8). It uses linting tools such as WartRemover and
-Sclariform.
+This service is built using Scala (2.13.10) and the Play framework (2.8).
+It uses a dependency called [chimney](https://github.com/scalalandio/chimney) for boilerplate-free data transformations.
+It uses linting tools such as WartRemover and Sclariform.
 It also uses the sbt updates plugin - to ensure that compilation fails if dependencies are not up-to-date.
 This microservice acts as a state machine, utilising mongodb.
 As users progress through the [frontend](https://www.github.com/hmrc/direct-debit-update-email-frontend) journey various
@@ -16,6 +17,7 @@ the frontend. We have coined the term `cor` for these modules - `collection of r
 ## Contents
 
 * [Dictionary](https://www.github.com/hmrc/direct-debit-update-email-backend#dictionary)
+* [Diagram of flow state](https://www.github.com/hmrc/direct-debit-update-email-backend#diagram-of-flow-state)
 * [Current supported tax regimes](https://www.github.com/hmrc/direct-debit-update-email-backend#current-supported-tax-regimes)
 * [Running the service locally](https://github.com/hmrc/direct-debit-update-email-backend#running-the-service-locally)
 * [Running tests](https://github.com/hmrc/direct-debit-update-email-backend#running-tests)
@@ -44,6 +46,21 @@ The current list of supported tax regimes is:
 * paye
 
 Current up-to-date list can be found in [application.conf](https://github.com/hmrc/direct-debit-update-email-backend/blob/main/conf/application.conf) under the key `allowed-tax-regimes`
+
+---
+
+### Diagram of flow state
+
+```mermaid
+graph LR;
+    Started --> SelectedEmail;
+    SelectedEmail --> EmailVerificationJourneyStarted;
+    EmailVerificationJourneyStarted --> ObtainedEmailVerificationResult;
+```
+
+To edit this, use [mermaid live editor](https://mermaid.live/)
+
+[Stages in code base](https://github.com/hmrc/direct-debit-update-email-backend/blob/main/cor-journey/src/main/scala/ddUpdateEmail/models/journey/Journey.scala)
 
 ---
 
