@@ -7,14 +7,14 @@ object AppDependencies {
 
   private val playVersion = s"-play-28"
 
-  private val bootstrapVersion = "7.13.0"
-  private val hmrcMongoVersion = "0.74.0"
+  private val bootstrapVersion = "7.14.0"
+  private val hmrcMongoVersion = "1.1.0"
   private val enumeratumVersion = "1.7.0"
   private val catsVersion = "2.9.0"
   private val cryptoVersion = "7.3.0"
   private val hmrcJsonEncryptionVersion = "5.1.0-play-28"
   private val playJsonDerivedCodesVersion = "7.0.0"
-  private val chimneyVersion = "0.6.2"
+  private val chimneyVersion = "0.7.1"
 
   lazy val microserviceDependencies: Seq[ModuleID] = {
 
@@ -49,7 +49,6 @@ object AppDependencies {
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo$playVersion" % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc" %% "json-encryption" % hmrcJsonEncryptionVersion,
     "uk.gov.hmrc" %% s"crypto-json$playVersion" % AppDependencies.cryptoVersion,
-    "uk.gov.hmrc" %% "crypto" % AppDependencies.cryptoVersion,
     "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
     "com.beachape" %% "enumeratum-play" % AppDependencies.enumeratumVersion,
     "org.julienrf" %% "play-json-derived-codecs" % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
