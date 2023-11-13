@@ -17,7 +17,7 @@ object AppDependencies {
 
     val compile = Seq(
       // format: OFF
-      "uk.gov.hmrc"          %% s"internal-auth-client$playVersion" % "1.7.0",
+      "uk.gov.hmrc"          %% s"internal-auth-client$playVersion" % "1.6.0",
       "uk.gov.hmrc"          %% s"bootstrap-backend$playVersion"    % bootstrapVersion,
       "com.beachape"         %% "enumeratum"                        % enumeratumVersion,
       "io.scalaland"         %% "chimney"                           % chimneyVersion
@@ -36,12 +36,6 @@ object AppDependencies {
 
   lazy val corJourneyDependencies: Seq[ModuleID] = Seq(
     // format:: OFF
-    //WARN! - The version of `auth-client` has to be exact!
-    //make sure it's version is the same as version in bootstrap (`uk.gov.hmrc:bootstrap-backend-play-xx_x.xx:xxx`)
-    //run `essttp-backend/dependencyTree::toFile deps.txt -f` and look for that line:
-    // +-uk.gov.hmrc:auth-client_2.12:3.0.0-play-27 (evicted by: 5.1.0-play-27)
-    //the correct version in this time was `3.0.0`
-    "uk.gov.hmrc" %% "auth-client" % "6.2.0-play-28",
     "uk.gov.hmrc" %% s"bootstrap-common$playVersion" % AppDependencies.bootstrapVersion % Provided,
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo$playVersion" % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc" %% "json-encryption" % hmrcJsonEncryptionVersion,
@@ -49,8 +43,7 @@ object AppDependencies {
     "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
     "com.beachape" %% "enumeratum-play" % AppDependencies.enumeratumVersion,
     "org.julienrf" %% "play-json-derived-codecs" % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
-    "org.typelevel" %% "cats-core" % catsVersion,
-    "uk.gov.hmrc" %% "http-verbs-play-28" % "14.11.0"
+    "org.typelevel" %% "cats-core" % catsVersion
   // format: ON
   )
 }

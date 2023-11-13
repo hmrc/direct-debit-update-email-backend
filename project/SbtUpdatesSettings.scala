@@ -23,7 +23,9 @@ object SbtUpdatesSettings {
     // java.lang.NoSuchMethodError: 'scala.Option play.api.libs.json.JsBoolean$.unapply(play.api.libs.json.JsBoolean)'
     // error on 1.7.2
     dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum"),
-    dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum-play")
+    dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum-play"),
+    // TODO internal-auth-client 1.7.0 was breaking. Review if future versions resolve the problem in OPS-11317
+    dependencyUpdatesFilter -= moduleFilter("uk.gov.hmrc", "internal-auth-client-play-28")
   )
 
 }
