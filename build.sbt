@@ -1,4 +1,4 @@
-import uk.gov.hmrc.DefaultBuildSettings.{scalaSettings, targetJvm}
+import uk.gov.hmrc.DefaultBuildSettings.scalaSettings
 import uk.gov.hmrc.ShellPrompt
 import wartremover.WartRemover.autoImport.wartremoverExcluded
 
@@ -45,7 +45,7 @@ lazy val commonSettings = Seq[SettingsDefinition](
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
-  .settings(commonSettings: _*)
+  .settings(commonSettings *)
   .settings(
     scalaVersion := appScalaVersion,
     libraryDependencies ++= AppDependencies.microserviceDependencies,
@@ -62,7 +62,7 @@ lazy val microservice = Project(appName, file("."))
  */
 lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
   .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
-  .settings(commonSettings: _*)
+  .settings(commonSettings *)
   .settings(
     scalaVersion := appScalaVersion,
     libraryDependencies ++= AppDependencies.corJourneyDependencies

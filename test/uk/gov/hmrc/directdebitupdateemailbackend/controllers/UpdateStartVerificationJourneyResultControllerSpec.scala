@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
-import play.api.test.Helpers._
-
 import ddUpdateEmail.connectors.JourneyConnector
 import ddUpdateEmail.models.StartEmailVerificationJourneyResult
+import play.api.test.Helpers._
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.AuthStub
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{ItSpec, TestData}
 import uk.gov.hmrc.http.UpstreamErrorResponse

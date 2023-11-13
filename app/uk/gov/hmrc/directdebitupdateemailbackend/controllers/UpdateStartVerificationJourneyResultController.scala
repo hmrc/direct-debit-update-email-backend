@@ -17,13 +17,12 @@
 package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
 import cats.syntax.eq._
-
 import com.google.inject.Inject
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
 import ddUpdateEmail.models.StartEmailVerificationJourneyResult
 import ddUpdateEmail.models.journey.{Journey, JourneyId}
 import ddUpdateEmail.utils.Errors
-import io.scalaland.chimney.dsl.TransformerOps
+import io.scalaland.chimney.dsl.TransformationOps
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.directdebitupdateemailbackend.actions.Actions
 import uk.gov.hmrc.directdebitupdateemailbackend.services.JourneyService

@@ -17,14 +17,13 @@
 package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
 import ddUpdateEmail.connectors.JourneyConnector
-import ddUpdateEmail.models.{BackUrl, DDINumber, Email, Origin, ReturnUrl, TaxRegime}
 import ddUpdateEmail.models.journey.{Journey, SessionId, SjRequest}
+import ddUpdateEmail.models._
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{SessionId => HttpSessionId}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.JourneyRepo
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{ItSpec, TestData}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId => HttpSessionId}
 
 class JourneyControllerSpec extends ItSpec {
 

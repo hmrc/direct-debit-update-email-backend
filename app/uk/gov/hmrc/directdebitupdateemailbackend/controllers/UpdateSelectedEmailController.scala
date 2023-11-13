@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
 import ddUpdateEmail.models.Email
 import ddUpdateEmail.models.journey.{Journey, JourneyId}
-import io.scalaland.chimney.dsl.TransformerOps
+import io.scalaland.chimney.dsl.TransformationOps
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.directdebitupdateemailbackend.actions.Actions
 import uk.gov.hmrc.directdebitupdateemailbackend.services.JourneyService
