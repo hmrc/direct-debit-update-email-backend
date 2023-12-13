@@ -4,14 +4,14 @@ object AppDependencies {
 
   private val playVersion = s"-play-28"
 
-  private val bootstrapVersion = "7.23.0"
-  private val hmrcMongoVersion = "1.3.0"
+  private val bootstrapVersion = "8.2.0"
+  private val hmrcMongoVersion = "1.6.0"
   private val enumeratumVersion = "1.7.0"
   private val catsVersion = "2.10.0"
   private val cryptoVersion = "7.6.0"
   private val hmrcJsonEncryptionVersion = "5.2.0-play-28"
   private val playJsonDerivedCodesVersion = "7.0.0"
-  private val chimneyVersion = "0.8.2"
+  private val chimneyVersion = "0.8.3"
 
   lazy val microserviceDependencies: Seq[ModuleID] = {
 
