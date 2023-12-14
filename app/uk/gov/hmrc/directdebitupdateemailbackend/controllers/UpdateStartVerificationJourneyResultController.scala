@@ -54,6 +54,7 @@ class UpdateStartVerificationJourneyResultController @Inject() (
     }
 
   private def updateJourneyWithNewValue(journey: Journey.SelectedEmail, result: StartEmailVerificationJourneyResult): Future[Journey] = {
+    @SuppressWarnings(Array("org.wartremover.warts.SeqApply"))
     val newJourney: Journey = journey.into[Journey.EmailVerificationJourneyStarted]
       .withFieldConst(_.startEmailVerificationJourneyResult, result)
       .transform
@@ -68,6 +69,7 @@ class UpdateStartVerificationJourneyResultController @Inject() (
     if (journey.startEmailVerificationJourneyResult === result) {
       Future.successful(journey)
     } else {
+      @SuppressWarnings(Array("org.wartremover.warts.SeqApply"))
       val newJourney = journey match {
         case j: Journey.EmailVerificationJourneyStarted =>
           j.copy(startEmailVerificationJourneyResult = result)
