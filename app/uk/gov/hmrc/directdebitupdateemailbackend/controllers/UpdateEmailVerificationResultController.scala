@@ -57,6 +57,7 @@ class UpdateEmailVerificationResultController @Inject() (
     }
 
   private def updateJourneyWithNewValue(journey: Journey.EmailVerificationJourneyStarted, result: EmailVerificationResult): Future[Journey] = {
+    @SuppressWarnings(Array("org.wartremover.warts.SeqApply"))
     val newJourney: Journey = journey.into[Journey.ObtainedEmailVerificationResult]
       .withFieldConst(_.emailVerificationResult, result)
       .transform

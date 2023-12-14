@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 
-import akka.util.Timeout
+import org.apache.pekko.util.Timeout
 import com.google.inject.{AbstractModule, Provides}
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
 import ddUpdateEmail.models.journey.Journey

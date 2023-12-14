@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import ddUpdateEmail.models.TaxId.EmpRef
 import ddUpdateEmail.models.{Origin, TaxRegime}
 import ddUpdateEmail.models.journey.Journey

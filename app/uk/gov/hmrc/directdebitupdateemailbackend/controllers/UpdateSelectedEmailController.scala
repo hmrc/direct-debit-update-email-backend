@@ -46,6 +46,7 @@ class UpdateSelectedEmailController @Inject() (
     }
 
   private def updateJourneyWithNewValue(journey: Journey.BeforeSelectedEmail, selectedEmail: Email): Future[Journey] = {
+    @SuppressWarnings(Array("org.wartremover.warts.SeqApply"))
     val newJourney: Journey = journey match {
       case j: Journey.Started =>
         j.into[Journey.SelectedEmail]
@@ -58,6 +59,7 @@ class UpdateSelectedEmailController @Inject() (
 
   private def updateJourneyWithExistingValue(journey: Journey.AfterSelectedEmail, selectedEmail: Email): Future[Journey] = {
     // don't check to see if email is same to allow for passcodes to be requested again for same email
+    @SuppressWarnings(Array("org.wartremover.warts.SeqApply"))
     val newJourney = journey match {
       case j: Journey.SelectedEmail =>
         j.copy(selectedEmail = selectedEmail)

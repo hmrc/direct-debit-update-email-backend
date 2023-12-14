@@ -2,10 +2,9 @@ import uk.gov.hmrc.DefaultBuildSettings.scalaSettings
 import uk.gov.hmrc.ShellPrompt
 import wartremover.WartRemover.autoImport.wartremoverExcluded
 
-
 val appName: String = "direct-debit-update-email-backend"
 
-val appScalaVersion = "2.13.10"
+val appScalaVersion = "2.13.12"
 
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
@@ -40,7 +39,6 @@ lazy val commonSettings = Seq[SettingsDefinition](
   WartRemoverSettings.wartRemoverSettings,
   ScoverageSettings.scoverageSettings,
   SbtUpdatesSettings.sbtUpdatesSettings,
-  libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 ) ++ ScalariformSettings.scalariformSettings
 
 lazy val microservice = Project(appName, file("."))
