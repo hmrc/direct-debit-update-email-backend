@@ -4,8 +4,8 @@ object AppDependencies {
 
   private val playVersion = "-play-30"
 
-  private val bootstrapVersion = "8.4.0"
-  private val hmrcMongoVersion = "1.7.0"
+  private val bootstrapVersion = "8.5.0"
+  private val hmrcMongoVersion = "1.8.0"
   private val enumeratumVersion = "1.7.3"
   private val enumeratumPlayVersion = "1.8.0"
   private val catsVersion = "2.10.0"
@@ -17,7 +17,7 @@ object AppDependencies {
 
     val compile = Seq(
       // format: OFF
-      "uk.gov.hmrc"          %% s"internal-auth-client$playVersion" % "1.10.0",
+      "uk.gov.hmrc"          %% s"internal-auth-client$playVersion" % "2.0.0",
       "uk.gov.hmrc"          %% s"bootstrap-backend$playVersion"    % bootstrapVersion,
       "com.beachape"         %% "enumeratum"                        % enumeratumVersion,
       "io.scalaland"         %% "chimney"                           % chimneyVersion

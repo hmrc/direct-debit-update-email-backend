@@ -51,7 +51,7 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
             )
             json.validate[GetBounceStatusResponse] shouldBe JsSuccess(
               GetBounceStatusResponse(
-                true,
+                isBounced = true,
                 TestData.bouncedEmail,
                 expectedTaxRegime,
                 Some(expectedTaxId)
@@ -71,7 +71,7 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
       )
       json.validate[GetBounceStatusResponse] shouldBe JsSuccess(
         GetBounceStatusResponse(
-          false,
+          isBounced = false,
           TestData.bouncedEmail,
           TaxRegime.Paye,
           None
