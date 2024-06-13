@@ -6,7 +6,6 @@ object AppDependencies {
 
   private val bootstrapVersion = "9.0.0"
   private val hmrcMongoVersion = "2.0.0"
->>>>>>> 0068914 ([JG] OPS-10801 - httpclient 2 and dependencies)
   private val enumeratumVersion = "1.7.3"
   private val enumeratumPlayVersion = "1.8.0"
   private val catsVersion = "2.12.0"
