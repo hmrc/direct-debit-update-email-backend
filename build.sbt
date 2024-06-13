@@ -42,7 +42,7 @@ lazy val commonSettings = Seq[SettingsDefinition](
 ) ++ ScalariformSettings.scalariformSettings
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(commonSettings *)
   .settings(
     scalaVersion := appScalaVersion,
@@ -59,7 +59,6 @@ lazy val microservice = Project(appName, file("."))
  * Collection Of Routines - the common journey
  */
 lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
-  .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
   .settings(commonSettings *)
   .settings(
     scalaVersion := appScalaVersion,
