@@ -20,17 +20,18 @@ import com.google.inject.{Inject, Singleton}
 import ddUpdateEmail.models.DDINumber
 import uk.gov.hmrc.directdebitupdateemailbackend.config.AppConfig
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DirectDebitBackendConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
+class DirectDebitBackendConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
 
   private def getStatusUrl(ddiNumber: DDINumber): String =
     s"${appConfig.directDebitBackendBaseUrl}/direct-debit-backend/bounced-email/status/${ddiNumber.value}"
 
   def getStatus(ddiNumber: DDINumber)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.GET[HttpResponse](getStatusUrl(ddiNumber))
+    httpClient.get(url"${getStatusUrl(ddiNumber)}").execute[HttpResponse]
 
 }

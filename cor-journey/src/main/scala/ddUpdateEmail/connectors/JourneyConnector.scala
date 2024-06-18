@@ -20,40 +20,42 @@ import com.google.inject.{Inject, Singleton}
 import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
 import ddUpdateEmail.models.journey.{Journey, JourneyId}
 import ddUpdateEmail.models.{Email, EmailVerificationResult, StartEmailVerificationJourneyResult}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JourneyConnector @Inject() (httpClient: HttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) {
+class JourneyConnector @Inject() (httpClient: HttpClientV2, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) {
 
   private val baseUrl: String = servicesConfig.baseUrl("direct-debit-update-email-backend")
 
   def findLatestJourneyBySessionId()(implicit hc: HeaderCarrier): Future[Option[Journey]] = {
     for {
       _ <- Future(require(hc.sessionId.isDefined, "Missing required 'SessionId'"))
-      result <- httpClient.GET[Option[Journey]](s"$baseUrl/direct-debit-update-email/journey/find-latest-by-session-id")
+      result <- httpClient.get(url"$baseUrl/direct-debit-update-email/journey/find-latest-by-session-id").execute[Option[Journey]]
     } yield result
   }
 
-  def updateSelectedEmail(journeyId: JourneyId, selectedEmail: Email)(implicit hc: HeaderCarrier): Future[Journey] =
-    httpClient.POST[Email, Journey](
-      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/selected-email",
-      selectedEmail
-    )
+  def updateSelectedEmail(journeyId: JourneyId, selectedEmail: Email)(implicit hc: HeaderCarrier): Future[Journey] = {
+    httpClient.post(url"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/selected-email")
+      .withBody(Json.toJson(selectedEmail))
+      .execute[Journey]
+  }
 
-  def updateStartEmailVerificationJourneyResult(journeyId: JourneyId, result: StartEmailVerificationJourneyResult)(implicit hc: HeaderCarrier): Future[Journey] =
-    httpClient.POST[StartEmailVerificationJourneyResult, Journey](
-      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/start-verification-journey-result",
-      result
-    )
+  def updateStartEmailVerificationJourneyResult(journeyId: JourneyId, result: StartEmailVerificationJourneyResult)(implicit hc: HeaderCarrier): Future[Journey] = {
+    httpClient.post(url"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/start-verification-journey-result")
+      .withBody(Json.toJson(result))
+      .execute[Journey]
+  }
 
-  def updateEmailVerificationResult(journeyId: JourneyId, result: EmailVerificationResult)(implicit hc: HeaderCarrier): Future[Journey] =
-    httpClient.POST[EmailVerificationResult, Journey](
-      s"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/email-verification-result",
-      result
-    )
+  def updateEmailVerificationResult(journeyId: JourneyId, result: EmailVerificationResult)(implicit hc: HeaderCarrier): Future[Journey] = {
+    httpClient.post(url"$baseUrl/direct-debit-update-email/journey/${journeyId.value}/email-verification-result")
+      .withBody(Json.toJson(result))
+      .execute[Journey]
+  }
 
 }
