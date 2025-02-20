@@ -22,6 +22,7 @@ import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import ddUpdateEmail.utils.DeriveJson
+import ddUpdateEmail.utils.DeriveJson.Circe.codec
 
 import java.time.{Clock, Instant}
 
