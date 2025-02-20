@@ -34,12 +34,10 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
       ("vatc", TaxRegime.VatC, "vrn", Vrn("123456")),
       ("ppt", TaxRegime.Ppt, "zppt", Zppt("12345")),
       ("zsdl", TaxRegime.Zsdl, "zsdl", Zsdl("1234"))
-    ).foreach {
-        case (taxRegimeString, expectedTaxRegime, taxIdType, expectedTaxId) =>
-
-          s"must be able to read for taxRegime=$taxRegimeString and taxIdType=$taxIdType" in {
-            val json = Json.parse(
-              s"""{
+    ).foreach { case (taxRegimeString, expectedTaxRegime, taxIdType, expectedTaxId) =>
+      s"must be able to read for taxRegime=$taxRegimeString and taxIdType=$taxIdType" in {
+        val json = Json.parse(
+          s"""{
                |  "isBounced": true,
                |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
                |  "taxRegime": "$taxRegimeString",
@@ -48,18 +46,18 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
                |    "value": "${expectedTaxId.value}"
                |  }
                |}""".stripMargin
-            )
-            json.validate[GetBounceStatusResponse] shouldBe JsSuccess(
-              GetBounceStatusResponse(
-                isBounced = true,
-                TestData.bouncedEmail,
-                expectedTaxRegime,
-                Some(expectedTaxId)
-              )
-            )
-          }
-
+        )
+        json.validate[GetBounceStatusResponse] shouldBe JsSuccess(
+          GetBounceStatusResponse(
+            isBounced = true,
+            TestData.bouncedEmail,
+            expectedTaxRegime,
+            Some(expectedTaxId)
+          )
+        )
       }
+
+    }
 
     "must be able to read when there is no taxId in the response" in {
       val json = Json.parse(

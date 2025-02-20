@@ -29,19 +29,20 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateSelectedEmailController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+    extends BackendController(cc) {
 
   def updateSelectedEmail(journeyId: JourneyId): Action[Email] =
-    actions.authenticatedAction.async(parse.json[Email]){ implicit request =>
+    actions.authenticatedAction.async(parse.json[Email]) { implicit request =>
       for {
-        journey <- journeyService.get(journeyId)
+        journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-          case j: Journey.BeforeSelectedEmail => updateJourneyWithNewValue(j, request.body)
-          case j: Journey.AfterSelectedEmail  => updateJourneyWithExistingValue(j, request.body)
-        }
+                        case j: Journey.BeforeSelectedEmail => updateJourneyWithNewValue(j, request.body)
+                        case j: Journey.AfterSelectedEmail  => updateJourneyWithExistingValue(j, request.body)
+                      }
       } yield Ok(newJourney.json)
     }
 
@@ -57,11 +58,14 @@ class UpdateSelectedEmailController @Inject() (
     journeyService.upsert(newJourney)
   }
 
-  private def updateJourneyWithExistingValue(journey: Journey.AfterSelectedEmail, selectedEmail: Email): Future[Journey] = {
+  private def updateJourneyWithExistingValue(
+    journey:       Journey.AfterSelectedEmail,
+    selectedEmail: Email
+  ): Future[Journey] = {
     // don't check to see if email is same to allow for passcodes to be requested again for same email
     @SuppressWarnings(Array("org.wartremover.warts.SeqApply"))
     val newJourney = journey match {
-      case j: Journey.SelectedEmail =>
+      case j: Journey.SelectedEmail                   =>
         j.copy(selectedEmail = selectedEmail)
       case j: Journey.EmailVerificationJourneyStarted =>
         j.into[Journey.SelectedEmail]

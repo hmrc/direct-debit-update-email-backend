@@ -29,16 +29,17 @@ import scala.concurrent.{ExecutionContext, Future}
 final case class AuthenticatedRequest[A](val request: Request[A]) extends WrappedRequest[A](request)
 
 class AuthenticatedActionRefiner @Inject() (
-    val authConnector: AuthConnector,
-    cc:                MessagesControllerComponents
-)(
-    implicit
-    ec: ExecutionContext
-) extends ActionRefiner[Request, AuthenticatedRequest] with BackendHeaderCarrierProvider with AuthorisedFunctions {
+  val authConnector: AuthConnector,
+  cc:                MessagesControllerComponents
+)(implicit
+  ec:                ExecutionContext
+) extends ActionRefiner[Request, AuthenticatedRequest]
+    with BackendHeaderCarrierProvider
+    with AuthorisedFunctions {
 
   private val logger = Logger(getClass)
 
-  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
+  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
     authorised(AuthProviders(GovernmentGateway)) {
       Future.successful(Right(AuthenticatedRequest(request)))
     }(hc(request), ec).recover {
@@ -49,7 +50,6 @@ class AuthenticatedActionRefiner @Inject() (
         logger.warn(s"Unauthorised because of ${e.reason}, please investigate why", e)
         Left(InternalServerError)
     }
-  }
 
   override protected def executionContext: ExecutionContext = cc.executionContext
 

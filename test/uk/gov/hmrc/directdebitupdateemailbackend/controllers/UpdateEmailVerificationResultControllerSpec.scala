@@ -46,7 +46,7 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec {
       AuthStub.ensureAuthoriseCalled()
     }
 
-    EmailVerificationResult.values.foreach{ verificationResult =>
+    EmailVerificationResult.values.foreach { verificationResult =>
       s"must update the status if an email verification journey has just been started [verificationResult = ${verificationResult.entryName}]" in {
         AuthStub.authorise()
 

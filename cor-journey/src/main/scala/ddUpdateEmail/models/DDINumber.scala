@@ -18,10 +18,10 @@ package ddUpdateEmail.models
 
 import play.api.libs.json.{Format, Json}
 
-final case class DDINumber(value: String)
+final case class DDINumber(value: String) extends AnyVal
 
 object DDINumber {
 
-  implicit val format: Format[DDINumber] = Json.valueFormat
+  given Format[DDINumber] = Json.valueFormat
 
 }

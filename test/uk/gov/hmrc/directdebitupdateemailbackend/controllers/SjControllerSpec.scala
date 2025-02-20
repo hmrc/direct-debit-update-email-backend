@@ -41,156 +41,166 @@ class SjControllerSpec extends ItSpec {
 
     List(
       (routes.SjController.startBta, Origin.BTA, controller.startBta, "direct-debit-update-email/bta/start"),
-      (routes.SjController.startEpaye, Origin.EpayeService, controller.startEpaye, "direct-debit-update-email/epaye/start")
-    ).foreach{
-        case (call, origin, doStart, internalAuthResourceLocation) =>
+      (
+        routes.SjController.startEpaye,
+        Origin.EpayeService,
+        controller.startEpaye,
+        "direct-debit-update-email/epaye/start"
+      )
+    ).foreach { case (call, origin, doStart, internalAuthResourceLocation) =>
+      s"when handling requests to start at ${call.url} for origin ${origin.toString} must" - {
 
-          s"when handling requests to start at ${call.url} for origin ${origin.toString} must" - {
+        val sjRequestJson: JsValue = Json.parse(
+          s"""{  "ddiNumber": "${TestData.ddiNumber.value}",  "backUrl": "/back",  "returnUrl": "/return" }"""
+        )
 
-            val sjRequestJson: JsValue = Json.parse(
-              s"""{  "ddiNumber": "${TestData.ddiNumber.value}",  "backUrl": "/back",  "returnUrl": "/return" }"""
-            )
+        val validFakeRequest =
+          FakeRequest()
+            .withJsonBodyAndJsonContentType(sjRequestJson)
+            .withAuthorization(TestData.internalAuthToken)
+            .withXSessionId(TestData.sessionId)
 
-            val validFakeRequest =
-              FakeRequest()
-                .withJsonBodyAndJsonContentType(sjRequestJson)
-                .withAuthorization(TestData.internalAuthToken)
-                .withXSessionId(TestData.sessionId)
+        "return a 400 (BAD_REQUEST) if there is no x-session-id header" in {
+          InternalAuthStub.authorise()
 
-            "return a 400 (BAD_REQUEST) if there is no x-session-id header" in {
-              InternalAuthStub.authorise()
+          val request =
+            FakeRequest().withJsonBodyAndJsonContentType(sjRequestJson).withAuthorization(TestData.internalAuthToken)
 
-              val request =
-                FakeRequest().withJsonBodyAndJsonContentType(sjRequestJson).withAuthorization(TestData.internalAuthToken)
-
-              val result = doStart(request)
-              status(result) shouldBe BAD_REQUEST
-              contentAsJson(result) shouldBe Json.parse(
-                """{
+          val result = doStart(request)
+          status(result) shouldBe BAD_REQUEST
+          contentAsJson(result) shouldBe Json.parse(
+            """{
                   |  "statusCode": 400,
                   |  "message": "session ID not found"
                   |}""".stripMargin
-              )
+          )
 
-              InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
-            }
+          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+        }
 
-            "return a 400 (BAD_REQUEST) if the JSON body cannot be parsed" in {
-              InternalAuthStub.authorise()
+        "return a 400 (BAD_REQUEST) if the JSON body cannot be parsed" in {
+          InternalAuthStub.authorise()
 
-              val request =
-                FakeRequest().withJsonBodyAndJsonContentType(JsNumber(1)).withAuthorization(TestData.internalAuthToken)
+          val request =
+            FakeRequest().withJsonBodyAndJsonContentType(JsNumber(1)).withAuthorization(TestData.internalAuthToken)
 
-              val result = doStart(request)
-              status(result) shouldBe BAD_REQUEST
-              contentAsJson(result) shouldBe Json.parse(
-                """{
+          val result = doStart(request)
+          status(result) shouldBe BAD_REQUEST
+          contentAsJson(result) shouldBe Json.parse(
+            """{
                 |  "statusCode": 400,
                 |  "message": "request body cannot be parsed"
                 |}""".stripMargin
-              )
+          )
 
-              InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
-            }
+          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+        }
 
-            "return a 404 (NOT_FOUND) if a direct debit cannot be found" in {
-              InternalAuthStub.authorise()
-              DirectDebitBackendStub.stubGetBouncedEmailStatus(
-                TestData.ddiNumber,
-                NOT_FOUND,
-                Some(Json.parse(
-                  """{
+        "return a 404 (NOT_FOUND) if a direct debit cannot be found" in {
+          InternalAuthStub.authorise()
+          DirectDebitBackendStub.stubGetBouncedEmailStatus(
+            TestData.ddiNumber,
+            NOT_FOUND,
+            Some(
+              Json.parse(
+                """{
                     |  "code": "NOT_FOUND",
                     |  "reason": "The DDINumber could not be found"
                     |}""".stripMargin
-                ))
               )
+            )
+          )
 
-              val result = doStart(validFakeRequest)
-              status(result) shouldBe NOT_FOUND
-              contentAsJson(result) shouldBe Json.parse(
-                """{
+          val result = doStart(validFakeRequest)
+          status(result) shouldBe NOT_FOUND
+          contentAsJson(result) shouldBe Json.parse(
+            """{
                   |  "statusCode": 404,
                   |  "message": "direct debit not found"
                   |}""".stripMargin
-              )
+          )
 
-              InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
-            }
+          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+        }
 
-            "return a 403 (FORBIDDEN) if the direct debit is for a tax regime which is not allowed" in {
-              InternalAuthStub.authorise()
-              DirectDebitBackendStub.stubGetBouncedEmailStatus(
-                TestData.ddiNumber,
-                OK,
-                Some(Json.parse(
-                  s"""{
+        "return a 403 (FORBIDDEN) if the direct debit is for a tax regime which is not allowed" in {
+          InternalAuthStub.authorise()
+          DirectDebitBackendStub.stubGetBouncedEmailStatus(
+            TestData.ddiNumber,
+            OK,
+            Some(
+              Json.parse(
+                s"""{
                     |  "isBounced": true,
                     |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
                     |  "taxRegime": "ppt"
                     |}""".stripMargin
-                ))
               )
+            )
+          )
 
-              val result = doStart(validFakeRequest)
-              status(result) shouldBe FORBIDDEN
-              contentAsJson(result) shouldBe Json.parse(
-                """{
+          val result = doStart(validFakeRequest)
+          status(result) shouldBe FORBIDDEN
+          contentAsJson(result) shouldBe Json.parse(
+            """{
                   |  "statusCode": 403,
                   |  "message": "tax regime not allowed"
                   |}""".stripMargin
-              )
+          )
 
-              InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
-            }
+          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+        }
 
-            "return a 409 (CONFLICT) if the email is not bounced" in {
-              InternalAuthStub.authorise()
-              DirectDebitBackendStub.stubGetBouncedEmailStatus(
-                TestData.ddiNumber,
-                OK,
-                Some(Json.parse(
-                  s"""{
+        "return a 409 (CONFLICT) if the email is not bounced" in {
+          InternalAuthStub.authorise()
+          DirectDebitBackendStub.stubGetBouncedEmailStatus(
+            TestData.ddiNumber,
+            OK,
+            Some(
+              Json.parse(
+                s"""{
                      |  "isBounced": false,
                      |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
                      |  "taxRegime": "paye"
                      |}""".stripMargin
-                ))
               )
+            )
+          )
 
-              val result = doStart(validFakeRequest)
-              status(result) shouldBe CONFLICT
+          val result = doStart(validFakeRequest)
+          status(result) shouldBe CONFLICT
 
-              contentAsJson(result) shouldBe Json.parse(
-                """{
+          contentAsJson(result) shouldBe Json.parse(
+            """{
                   |  "statusCode": 409,
                   |  "message": "email not bounced"
                   |}""".stripMargin
-              )
-              InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
-            }
+          )
+          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+        }
 
-            "throw an exception if direct-debit-backend returns a 404 (NOT_FOUND) response without a body saying " +
-              "the DD cannot be found" in {
-                InternalAuthStub.authorise()
-                DirectDebitBackendStub.stubGetBouncedEmailStatus(
-                  TestData.ddiNumber,
-                  NOT_FOUND,
-                  Some(JsNull)
-                )
+        "throw an exception if direct-debit-backend returns a 404 (NOT_FOUND) response without a body saying " +
+          "the DD cannot be found" in {
+            InternalAuthStub.authorise()
+            DirectDebitBackendStub.stubGetBouncedEmailStatus(
+              TestData.ddiNumber,
+              NOT_FOUND,
+              Some(JsNull)
+            )
 
-                an[UpstreamErrorResponse] shouldBe thrownBy(await(doStart(validFakeRequest)))
-                InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
-              }
+            an[UpstreamErrorResponse] shouldBe thrownBy(await(doStart(validFakeRequest)))
+            InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+          }
 
-            "return a 201 (CREATED) if session has been created" in {
-              val empRef = EmpRef("12345")
-              InternalAuthStub.authorise()
-              DirectDebitBackendStub.stubGetBouncedEmailStatus(
-                TestData.ddiNumber,
-                OK,
-                Some(Json.parse(
-                  s"""{
+        "return a 201 (CREATED) if session has been created" in {
+          val empRef = EmpRef("12345")
+          InternalAuthStub.authorise()
+          DirectDebitBackendStub.stubGetBouncedEmailStatus(
+            TestData.ddiNumber,
+            OK,
+            Some(
+              Json.parse(
+                s"""{
                      |  "isBounced": true,
                      |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
                      |  "taxRegime": "paye",
@@ -199,35 +209,38 @@ class SjControllerSpec extends ItSpec {
                      |    "value": "${empRef.value}"
                      |  }
                      |}""".stripMargin
-                ))
               )
+            )
+          )
 
-              val journeyId = journeyIdGenerator.readNextJourneyId()
-              val result = doStart(validFakeRequest)
+          val journeyId = journeyIdGenerator.readNextJourneyId()
+          val result    = doStart(validFakeRequest)
 
-              status(result) shouldBe CREATED
-              val body = contentAsJson(result)
-              body shouldBe Json.parse("""{ "nextUrl": "http://localhost:10801/direct-debit-verify-email/check-or-change-email-address" }""")
+          status(result) shouldBe CREATED
+          val body = contentAsJson(result)
+          body shouldBe Json.parse(
+            """{ "nextUrl": "http://localhost:10801/direct-debit-verify-email/check-or-change-email-address" }"""
+          )
 
-              await(journeyRepo.findLatestJourney(TestData.sessionId)) shouldBe Some(
-                Journey.Started(
-                  journeyId,
-                  origin,
-                  frozenZonedDateTime.toInstant,
-                  TestData.sjRequest,
-                  TestData.sessionId,
-                  TaxRegime.Paye,
-                  Some(empRef),
-                  TestData.bouncedEmail
-                )
-              )
+          await(journeyRepo.findLatestJourney(TestData.sessionId)) shouldBe Some(
+            Journey.Started(
+              journeyId,
+              origin,
+              frozenZonedDateTime.toInstant,
+              TestData.sjRequest,
+              TestData.sessionId,
+              TaxRegime.Paye,
+              Some(empRef),
+              TestData.bouncedEmail
+            )
+          )
 
-              InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
-            }
-
-          }
+          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+        }
 
       }
+
+    }
 
   }
 

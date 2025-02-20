@@ -30,7 +30,10 @@ class UpdateStartVerificationJourneyResultControllerSpec extends ItSpec {
   "POST /journey/:journeyId/start-verification-journey-result" - {
 
     behave like authenticatedJourneyEndpointBehaviour(
-      journeyConnector.updateStartEmailVerificationJourneyResult(TestData.journeyId, StartEmailVerificationJourneyResult.TooManyPasscodeJourneysStarted)(_)
+      journeyConnector.updateStartEmailVerificationJourneyResult(
+        TestData.journeyId,
+        StartEmailVerificationJourneyResult.TooManyPasscodeJourneysStarted
+      )(_)
     )
 
     "must return a 400 (BAD_REQUEST) if an email has not been selected yet" in {
@@ -39,7 +42,12 @@ class UpdateStartVerificationJourneyResultControllerSpec extends ItSpec {
       insertJourneyForTest(TestData.Journeys.afterStarted())
 
       val error = intercept[UpstreamErrorResponse](
-        await(journeyConnector.updateStartEmailVerificationJourneyResult(TestData.journeyId, StartEmailVerificationJourneyResult.AlreadyVerified))
+        await(
+          journeyConnector.updateStartEmailVerificationJourneyResult(
+            TestData.journeyId,
+            StartEmailVerificationJourneyResult.AlreadyVerified
+          )
+        )
       )
       error.statusCode shouldBe BAD_REQUEST
 
@@ -52,19 +60,19 @@ class UpdateStartVerificationJourneyResultControllerSpec extends ItSpec {
       StartEmailVerificationJourneyResult.TooManyPasscodeJourneysStarted,
       StartEmailVerificationJourneyResult.TooManyPasscodeAttempts,
       StartEmailVerificationJourneyResult.TooManyDifferentEmailAddresses
-    ).foreach{ startResult =>
-        s"must update the status if an email has just been selected [startResult = ${startResult.getClass.getSimpleName}]" in {
-          AuthStub.authorise()
+    ).foreach { startResult =>
+      s"must update the status if an email has just been selected [startResult = ${startResult.getClass.getSimpleName}]" in {
+        AuthStub.authorise()
 
-          insertJourneyForTest(TestData.Journeys.afterSelectedEmail())
+        insertJourneyForTest(TestData.Journeys.afterSelectedEmail())
 
-          val result =
-            journeyConnector.updateStartEmailVerificationJourneyResult(TestData.journeyId, startResult)
-          await(result) shouldBe TestData.Journeys.afterEmailVerificationJourneyStarted(startResult)
+        val result =
+          journeyConnector.updateStartEmailVerificationJourneyResult(TestData.journeyId, startResult)
+        await(result) shouldBe TestData.Journeys.afterEmailVerificationJourneyStarted(startResult)
 
-          AuthStub.ensureAuthoriseCalled()
-        }
+        AuthStub.ensureAuthoriseCalled()
       }
+    }
 
     "must update the status if a start verification result was already in the journey" in {
       AuthStub.authorise()
@@ -72,8 +80,13 @@ class UpdateStartVerificationJourneyResultControllerSpec extends ItSpec {
       insertJourneyForTest(TestData.Journeys.afterEmailVerificationJourneyStarted())
 
       val result =
-        journeyConnector.updateStartEmailVerificationJourneyResult(TestData.journeyId, StartEmailVerificationJourneyResult.TooManyPasscodeJourneysStarted)
-      await(result) shouldBe TestData.Journeys.afterEmailVerificationJourneyStarted(StartEmailVerificationJourneyResult.TooManyPasscodeJourneysStarted)
+        journeyConnector.updateStartEmailVerificationJourneyResult(
+          TestData.journeyId,
+          StartEmailVerificationJourneyResult.TooManyPasscodeJourneysStarted
+        )
+      await(result) shouldBe TestData.Journeys.afterEmailVerificationJourneyStarted(
+        StartEmailVerificationJourneyResult.TooManyPasscodeJourneysStarted
+      )
 
       AuthStub.ensureAuthoriseCalled()
     }

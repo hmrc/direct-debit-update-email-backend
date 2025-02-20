@@ -4,14 +4,15 @@ object AppDependencies {
 
   private val playVersion = "-play-30"
 
-  private val bootstrapVersion = "9.5.0"
-  private val hmrcMongoVersion = "2.3.0"
+  private val bootstrapVersion = "9.9.0"
+  private val hmrcMongoVersion = "2.5.0"
   private val enumeratumVersion = "1.7.3"
   private val enumeratumPlayVersion = "1.8.0"
-  private val catsVersion = "2.12.0"
-  private val cryptoVersion = "8.1.0"
+  private val catsVersion = "2.13.0"
+  private val cryptoVersion = "8.2.0"
   private val playJsonDerivedCodesVersion = "10.1.0"
-  private val chimneyVersion = "1.5.0"
+  private val chimneyVersion = "1.7.3"
+  private val circeVersion = "0.14.10"
 
   lazy val microserviceDependencies: Seq[ModuleID] = {
 
@@ -40,7 +41,9 @@ object AppDependencies {
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo$playVersion"       % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc"       %% s"crypto-json$playVersion"      % AppDependencies.cryptoVersion,
     "com.beachape"      %% "enumeratum-play"               % AppDependencies.enumeratumPlayVersion,
-    "org.julienrf"      %% "play-json-derived-codecs"      % AppDependencies.playJsonDerivedCodesVersion,
+    "io.circe"          %% "circe-core"                    % circeVersion,
+    "io.circe"          %% "circe-generic"                 % circeVersion,
+    "io.circe"          %% "circe-parser"                  % circeVersion,
     "org.typelevel"     %% "cats-core"                     % catsVersion
   // format: ON
   )

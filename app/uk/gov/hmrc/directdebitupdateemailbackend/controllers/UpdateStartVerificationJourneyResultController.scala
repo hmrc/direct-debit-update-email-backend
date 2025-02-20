@@ -31,31 +31,38 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateStartVerificationJourneyResultController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+    extends BackendController(cc) {
 
   def updateStartVerificationJourneyResult(journeyId: JourneyId): Action[StartEmailVerificationJourneyResult] =
-    actions.authenticatedAction.async(parse.json[StartEmailVerificationJourneyResult]){ implicit request =>
+    actions.authenticatedAction.async(parse.json[StartEmailVerificationJourneyResult]) { implicit request =>
       for {
-        journey <- journeyService.get(journeyId)
+        journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-          case _: Journey.BeforeSelectedEmail =>
-            Errors.throwBadRequestException("Cannot update start verification journey result when email has not been selected")
+                        case _: Journey.BeforeSelectedEmail =>
+                          Errors.throwBadRequestException(
+                            "Cannot update start verification journey result when email has not been selected"
+                          )
 
-          case j: Journey.SelectedEmail =>
-            updateJourneyWithNewValue(j, request.body)
+                        case j: Journey.SelectedEmail =>
+                          updateJourneyWithNewValue(j, request.body)
 
-          case j: Journey.AfterEmailVerificationJourneyStarted =>
-            updateJourney(j, request.body)
-        }
+                        case j: Journey.AfterEmailVerificationJourneyStarted =>
+                          updateJourney(j, request.body)
+                      }
       } yield Ok(newJourney.json)
     }
 
-  private def updateJourneyWithNewValue(journey: Journey.SelectedEmail, result: StartEmailVerificationJourneyResult): Future[Journey] = {
+  private def updateJourneyWithNewValue(
+    journey: Journey.SelectedEmail,
+    result:  StartEmailVerificationJourneyResult
+  ): Future[Journey] = {
     @SuppressWarnings(Array("org.wartremover.warts.SeqApply"))
-    val newJourney: Journey = journey.into[Journey.EmailVerificationJourneyStarted]
+    val newJourney: Journey = journey
+      .into[Journey.EmailVerificationJourneyStarted]
       .withFieldConst(_.startEmailVerificationJourneyResult, result)
       .transform
 
@@ -63,9 +70,9 @@ class UpdateStartVerificationJourneyResultController @Inject() (
   }
 
   private def updateJourney(
-      journey: Journey.AfterEmailVerificationJourneyStarted,
-      result:  StartEmailVerificationJourneyResult
-  ): Future[Journey] = {
+    journey: Journey.AfterEmailVerificationJourneyStarted,
+    result:  StartEmailVerificationJourneyResult
+  ): Future[Journey] =
     if (journey.startEmailVerificationJourneyResult === result) {
       Future.successful(journey)
     } else {
@@ -82,7 +89,4 @@ class UpdateStartVerificationJourneyResultController @Inject() (
       journeyService.upsert(newJourney)
     }
 
-  }
-
 }
-

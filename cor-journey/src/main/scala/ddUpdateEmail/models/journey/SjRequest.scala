@@ -20,9 +20,9 @@ import ddUpdateEmail.models.{BackUrl, DDINumber, ReturnUrl}
 import play.api.libs.json.{Json, OFormat}
 
 final case class SjRequest(
-    ddiNumber: DDINumber,
-    backUrl:   BackUrl,
-    returnUrl: ReturnUrl
+  ddiNumber: DDINumber,
+  backUrl:   BackUrl,
+  returnUrl: ReturnUrl
 )
 
 object SjRequest {

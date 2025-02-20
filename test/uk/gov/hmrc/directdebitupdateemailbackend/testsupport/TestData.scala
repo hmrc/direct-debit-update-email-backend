@@ -65,7 +65,11 @@ object TestData {
         bouncedEmail
       )
 
-    def afterSelectedEmail(selectedEmail: Email = selectedEmail, origin: Origin = Origin.BTA, taxRegime: TaxRegime = TaxRegime.Paye) =
+    def afterSelectedEmail(
+      selectedEmail: Email = selectedEmail,
+      origin:        Origin = Origin.BTA,
+      taxRegime:     TaxRegime = TaxRegime.Paye
+    ) =
       Journey.SelectedEmail(
         journeyId,
         origin,
@@ -79,10 +83,11 @@ object TestData {
       )
 
     def afterEmailVerificationJourneyStarted(
-        startVerificationResult: StartEmailVerificationJourneyResult = StartEmailVerificationJourneyResult.Ok(emailVerificationRedirectUrl),
-        selectedEmail:           Email                               = selectedEmail,
-        origin:                  Origin                              = Origin.BTA,
-        taxRegime:               TaxRegime                           = TaxRegime.Paye
+      startVerificationResult: StartEmailVerificationJourneyResult =
+        StartEmailVerificationJourneyResult.Ok(emailVerificationRedirectUrl),
+      selectedEmail:           Email = selectedEmail,
+      origin:                  Origin = Origin.BTA,
+      taxRegime:               TaxRegime = TaxRegime.Paye
     ) =
       Journey.EmailVerificationJourneyStarted(
         journeyId,
@@ -98,10 +103,10 @@ object TestData {
       )
 
     def afterEmailVerificationResult(
-        result:        EmailVerificationResult = EmailVerificationResult.Verified,
-        selectedEmail: Email                   = selectedEmail,
-        origin:        Origin                  = Origin.BTA,
-        taxRegime:     TaxRegime               = TaxRegime.Paye
+      result:        EmailVerificationResult = EmailVerificationResult.Verified,
+      selectedEmail: Email = selectedEmail,
+      origin:        Origin = Origin.BTA,
+      taxRegime:     TaxRegime = TaxRegime.Paye
     ) =
       Journey.ObtainedEmailVerificationResult(
         journeyId,

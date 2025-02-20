@@ -22,10 +22,10 @@ import ddUpdateEmail.models.{Email, TaxId, TaxRegime}
 import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 
 final case class GetBounceStatusResponse(
-    isBounced: Boolean,
-    email:     Email,
-    taxRegime: TaxRegime,
-    taxId:     Option[TaxId]
+  isBounced: Boolean,
+  email:     Email,
+  taxRegime: TaxRegime,
+  taxId:     Option[TaxId]
 )
 
 object GetBounceStatusResponse {
@@ -35,15 +35,15 @@ object GetBounceStatusResponse {
     implicit val taxIdReads: Reads[TaxId] =
       Reads { jsValue =>
         for {
-          value <- (jsValue \ "value").validate[String]
+          value      <- (jsValue \ "value").validate[String]
           typeString <- (jsValue \ "type").validate[String]
-          taxId <- typeString match {
-            case "vrn"    => JsSuccess(Vrn(value))
-            case "empref" => JsSuccess(EmpRef(value))
-            case "zppt"   => JsSuccess(Zppt(value))
-            case "zsdl"   => JsSuccess(Zsdl(value))
-            case other    => JsError(s"Unrecognised type type '$other'")
-          }
+          taxId      <- typeString match {
+                          case "vrn"    => JsSuccess(Vrn(value))
+                          case "empref" => JsSuccess(EmpRef(value))
+                          case "zppt"   => JsSuccess(Zppt(value))
+                          case "zsdl"   => JsSuccess(Zsdl(value))
+                          case other    => JsError(s"Unrecognised type type '$other'")
+                        }
         } yield taxId
       }
     Json.reads

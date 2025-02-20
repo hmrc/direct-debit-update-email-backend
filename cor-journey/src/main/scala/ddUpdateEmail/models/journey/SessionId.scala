@@ -18,11 +18,10 @@ package ddUpdateEmail.models.journey
 
 import play.api.libs.json.{Format, Json}
 
-final case class SessionId(value: String)
+final case class SessionId(value: String) extends AnyVal
 
 object SessionId {
 
   implicit val format: Format[SessionId] = Json.valueFormat
 
 }
-
