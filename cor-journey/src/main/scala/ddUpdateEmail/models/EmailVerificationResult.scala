@@ -23,13 +23,13 @@ import play.api.libs.json.Format
 
 import scala.collection.immutable
 
-sealed trait EmailVerificationResult extends EnumEntry with Product with Serializable
+sealed trait EmailVerificationResult extends EnumEntry, Product, Serializable derives CanEqual
 
 object EmailVerificationResult extends PlayEnum[EmailVerificationResult] {
 
-  implicit val eq: Eq[EmailVerificationResult] = Eq.fromUniversalEquals
+  given Eq[EmailVerificationResult] = Eq.fromUniversalEquals
 
-  implicit val format: Format[EmailVerificationResult] = EnumFormat(EmailVerificationResult)
+  given Format[EmailVerificationResult] = EnumFormat(EmailVerificationResult)
 
   case object Verified extends EmailVerificationResult
 

@@ -28,13 +28,13 @@ final case class Email(value: SensitiveString) extends AnyVal
 
 object Email {
 
-  implicit val eq: Eq[Email] = {
+  given Eq[Email] = {
     def toLowerCaseString(e: Email): String = e.value.decryptedValue.toLowerCase(Locale.UK)
     Eq.instance { case (e1, e2) => toLowerCaseString(e1) === toLowerCaseString(e2) }
   }
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Email] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] =
+  given format(using cryptoFormat: CryptoFormat): Format[Email] = {
+    given Format[SensitiveString] =
       ddUpdateEmail.crypto.sensitiveStringFormat(cryptoFormat)
     Json.valueFormat
   }

@@ -27,7 +27,6 @@ final case class SjRequest(
 
 object SjRequest {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[SjRequest] = Json.format
+  given OFormat[SjRequest] = Json.format
 
 }

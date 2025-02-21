@@ -33,7 +33,7 @@ class SjController @Inject() (
   startService: StartService,
   auth:         BackendAuthComponents,
   cc:           ControllerComponents
-)(implicit ex: ExecutionContext)
+)(using ExecutionContext)
     extends BackendController(cc) {
 
   private def internalAuthPermission(origin: String): Predicate.Permission = Predicate.Permission(

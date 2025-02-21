@@ -30,9 +30,9 @@ import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JourneyConnector @Inject() (httpClient: HttpClientV2, servicesConfig: ServicesConfig)(implicit
-  ec:           ExecutionContext,
-  cryptoFormat: OperationalCryptoFormat
+class JourneyConnector @Inject() (httpClient: HttpClientV2, servicesConfig: ServicesConfig)(using
+  ExecutionContext,
+  OperationalCryptoFormat
 ) {
 
   private val baseUrl: String = servicesConfig.baseUrl("direct-debit-update-email-backend")

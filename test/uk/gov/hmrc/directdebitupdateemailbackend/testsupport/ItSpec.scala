@@ -33,25 +33,20 @@ import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.JourneyRepo
 import uk.gov.hmrc.directdebitupdateemailbackend.services.JourneyIdGenerator
 import uk.gov.hmrc.http.HeaderCarrier
+import org.mongodb.scala.ObservableFuture
 
 import java.time.format.DateTimeFormatter
 import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import javax.inject.Singleton
-import scala.annotation.nowarn
 import scala.concurrent.duration._
 import scala.util.Random
 
-trait ItSpec
-    extends AnyFreeSpecLike
-    with RichMatchers
-    with GuiceOneServerPerSuite
-    with WireMockSupport
-    with CommonBehaviour { self =>
+trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, WireMockSupport, CommonBehaviour { self =>
   private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
   def insertJourneyForTest(journey: Journey): Unit = journeyRepo.upsert(journey).futureValue
 
-  implicit def hcWithAuthorization: HeaderCarrier = HeaderCarrier(authorization = Some(TestData.bearerToken))
+  given hcWithAuthorization: HeaderCarrier = HeaderCarrier(authorization = Some(TestData.bearerToken))
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -82,12 +77,10 @@ trait ItSpec
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def operationalCryptoFormat: OperationalCryptoFormat = OperationalCryptoFormat(testCrypto)
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def clock: Clock = self.clock
 
     /** This one is randomised every time new test application is spawned. Thanks to that there will be no collisions in
@@ -95,12 +88,10 @@ trait ItSpec
       */
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def journeyIdGenerator(testJourneyIdGenerator: TestJourneyIdGenerator): JourneyIdGenerator = testJourneyIdGenerator
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testJourneyIdGenerator(): TestJourneyIdGenerator = {
       val randomPart: String      = Random.alphanumeric.take(5).mkString
       val journeyIdPrefix: String = s"TestJourneyId-$randomPart-"

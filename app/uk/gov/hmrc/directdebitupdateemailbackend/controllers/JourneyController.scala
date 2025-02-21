@@ -30,10 +30,8 @@ import scala.concurrent.ExecutionContext
 class JourneyController @Inject() (
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit
-  cryptoFormat:   OperationalCryptoFormat,
-  ec:             ExecutionContext
-) extends BackendController(cc) {
+)(using OperationalCryptoFormat, ExecutionContext)
+    extends BackendController(cc) {
 
   val findLatestJourneyBySessionId: Action[AnyContent] = Action.async { implicit request =>
     val sessionId: SessionId =

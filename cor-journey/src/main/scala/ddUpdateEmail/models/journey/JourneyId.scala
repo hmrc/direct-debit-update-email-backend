@@ -23,9 +23,9 @@ final case class JourneyId(value: String) extends AnyVal
 
 object JourneyId {
 
-  implicit val format: Format[JourneyId] = Json.valueFormat
+  given Format[JourneyId] = Json.valueFormat
 
   /** Allows JourneyId final case class to be used as a query parameter in controllers
     */
-  implicit val journeyIdBinder: PathBindable[JourneyId] = ddUpdateEmail.utils.ValueClassBinder.valueClassBinder(_.value)
+  given PathBindable[JourneyId] = ddUpdateEmail.utils.ValueClassBinder.valueClassBinder(_.value)
 }

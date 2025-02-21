@@ -31,11 +31,10 @@ final case class AuthenticatedRequest[A](val request: Request[A]) extends Wrappe
 class AuthenticatedActionRefiner @Inject() (
   val authConnector: AuthConnector,
   cc:                MessagesControllerComponents
-)(implicit
-  ec:                ExecutionContext
-) extends ActionRefiner[Request, AuthenticatedRequest]
-    with BackendHeaderCarrierProvider
-    with AuthorisedFunctions {
+)(using ec: ExecutionContext)
+    extends ActionRefiner[Request, AuthenticatedRequest],
+      BackendHeaderCarrierProvider,
+      AuthorisedFunctions {
 
   private val logger = Logger(getClass)
 

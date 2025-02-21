@@ -19,14 +19,14 @@ package ddUpdateEmail.models.journey
 import ddUpdateEmail.crypto.CryptoFormat
 import ddUpdateEmail.models.{Email, EmailVerificationResult, Origin, StartEmailVerificationJourneyResult, TaxId, TaxRegime}
 import io.circe.generic.semiauto.deriveCodec
-import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
+import play.api.libs.json.{JsObject, JsValue, Json, OFormat, OWrites}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import ddUpdateEmail.utils.DeriveJson
 import ddUpdateEmail.utils.DeriveJson.Circe.codec
 
 import java.time.{Clock, Instant}
 
-sealed trait Journey {
+sealed trait Journey derives CanEqual {
   val _id: JourneyId
   val origin: Origin
   val createdOn: Instant
@@ -41,8 +41,7 @@ sealed trait Journey {
 object Journey {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  given jFormat(using cryptoFormat: CryptoFormat): OFormat[Journey] = {
-//    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  given format(using cryptoFormat: CryptoFormat): OFormat[Journey] = {
     val defaultFormat: OFormat[Journey] = DeriveJson.Circe.format(deriveCodec[Journey])
 
     // we need to write some extra fields on the top of the structure so it's
@@ -55,14 +54,16 @@ object Journey {
       )
     )
     OFormat(
-      defaultFormat,
+      defaultFormat.preprocess { case j: JsObject =>
+        j - "lastUpdated" - "createdAt" - "sessionId" - "_id"
+      },
       customWrites
     )
   }
 
   implicit class JourneyOps(private val j: Journey) extends AnyVal {
 
-    def json(implicit cryptoFormat: CryptoFormat): JsValue = Json.toJson(j)
+    def json(using CryptoFormat): JsValue = Json.toJson(j)
 
   }
 

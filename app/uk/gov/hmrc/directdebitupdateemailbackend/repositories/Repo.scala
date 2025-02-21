@@ -22,6 +22,7 @@ import play.api.libs.json._
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.Repo._
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.MongoComponent
+import org.mongodb.scala.ObservableFuture
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -33,7 +34,7 @@ abstract class Repo[ID, A: ClassTag](
   indexes:          Seq[IndexModel],
   extraCodecs:      Seq[Codec[_]],
   replaceIndexes:   Boolean = false
-)(implicit
+)(using
   domainFormat:     OFormat[A],
   executionContext: ExecutionContext,
   id:               Id[ID],

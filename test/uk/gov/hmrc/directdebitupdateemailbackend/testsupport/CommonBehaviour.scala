@@ -17,12 +17,13 @@
 package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 
 import play.api.test.Helpers._
+import org.scalatest.freespec.AnyFreeSpecLike
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.AuthStub
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
-trait CommonBehaviour { this: ItSpec =>
+trait CommonBehaviour extends AnyFreeSpecLike { this: ItSpec =>
 
   def authenticatedJourneyEndpointBehaviour[A](getResult: HeaderCarrier => Future[A]): Unit = {
 

@@ -23,11 +23,11 @@ import play.api.libs.json.Format
 
 import scala.collection.immutable
 
-sealed trait TaxRegime extends EnumEntry with Lowercase with Product with Serializable
+sealed trait TaxRegime extends EnumEntry, Lowercase, Product, Serializable derives CanEqual
 
 object TaxRegime extends PlayEnum[TaxRegime] {
 
-  implicit val format: Format[TaxRegime] = EnumFormat(TaxRegime)
+  given Format[TaxRegime] = EnumFormat(TaxRegime)
 
   /** Soft Drinks Industry Levy (Sdil)
     */

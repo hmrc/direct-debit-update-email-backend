@@ -23,9 +23,9 @@ import org.scalatest.freespec.AnyFreeSpecLike
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{RichMatchers, TestData}
 
-class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
+class GetBounceStatusResponseSpec extends AnyFreeSpecLike, RichMatchers {
 
-  implicit val cryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+  given CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   "GetBounceStatusResponse " - {
 
@@ -47,7 +47,7 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
                |  }
                |}""".stripMargin
         )
-        json.validate[GetBounceStatusResponse] shouldBe JsSuccess(
+        json.validate[GetBounceStatusResponse] shouldEqual JsSuccess(
           GetBounceStatusResponse(
             isBounced = true,
             TestData.bouncedEmail,
@@ -67,7 +67,7 @@ class GetBounceStatusResponseSpec extends AnyFreeSpecLike with RichMatchers {
            |  "taxRegime": "paye"
            |}""".stripMargin
       )
-      json.validate[GetBounceStatusResponse] shouldBe JsSuccess(
+      json.validate[GetBounceStatusResponse] shouldEqual JsSuccess(
         GetBounceStatusResponse(
           isBounced = false,
           TestData.bouncedEmail,

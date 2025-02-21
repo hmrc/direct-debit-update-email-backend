@@ -34,7 +34,7 @@ class StartService @Inject() (
   journeyIdGenerator:        JourneyIdGenerator,
   clock:                     Clock,
   journeyRepo:               JourneyRepo
-)(implicit ec: ExecutionContext) {
+)(using ExecutionContext) {
 
   private implicit def toFuture(r: StartResult): Future[StartResult] = Future.successful(r)
 
@@ -42,7 +42,7 @@ class StartService @Inject() (
     s"${appConfig.startNextUrlBase}/direct-debit-verify-email/check-or-change-email-address"
   )
 
-  def start(origin: Origin, sjRequest: SjRequest)(implicit hc: HeaderCarrier): Future[StartResult] =
+  def start(origin: Origin, sjRequest: SjRequest)(using hc: HeaderCarrier): Future[StartResult] =
     hc.sessionId match {
       case None =>
         StartResult.NoSessionId

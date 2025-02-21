@@ -27,6 +27,7 @@ import uk.gov.hmrc.directdebitupdateemailbackend.repositories.JourneyRepo
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.FakeRequestUtils.FakeRequestOps
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.{DirectDebitBackendStub, InternalAuthStub}
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.{ItSpec, TestData}
+import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.Givens.jsValueCanEqual
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
 class SjControllerSpec extends ItSpec {

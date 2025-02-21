@@ -31,8 +31,8 @@ final case class GetBounceStatusResponse(
 object GetBounceStatusResponse {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def reads(implicit cryptoFormat: CryptoFormat): Reads[GetBounceStatusResponse] = {
-    implicit val taxIdReads: Reads[TaxId] =
+  given reads(using CryptoFormat): Reads[GetBounceStatusResponse] = {
+    given taxIdReads: Reads[TaxId] =
       Reads { jsValue =>
         for {
           value      <- (jsValue \ "value").validate[String]

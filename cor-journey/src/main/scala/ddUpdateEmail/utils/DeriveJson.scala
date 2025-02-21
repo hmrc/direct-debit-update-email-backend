@@ -28,24 +28,23 @@ object DeriveJson {
     given jsValueCanEqual: CanEqual[JsValue, JsValue] =
       CanEqual.derived
 
-    def toPlay(json: CirceJson): JsValue = json.fold(
+    @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+    private def toPlay(json: CirceJson): JsValue = json.fold(
       JsNull,
       JsBoolean(_),
       jsonNumber => JsNumber(jsonNumber.toBigDecimal.getOrElse(sys.error("Could not convert to big decimal"))),
       JsString(_),
       vector => JsArray(vector.map(toPlay)),
-      jsonObject =>
-        JsObject(
-          jsonObject.toMap.map { case (k, v) => k -> toPlay(v) }
-        )
+      toPlayObject
     )
 
-    def toPlayObject(jsonObject: JsonObject): JsObject =
+    private def toPlayObject(jsonObject: JsonObject): JsObject =
       JsObject(
         jsonObject.toMap.map { case (k, v) => k -> toPlay(v) }
       )
 
-    def toCirce(j: JsValue): CirceJson = j match {
+    @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+    private def toCirce(j: JsValue): CirceJson = j match {
       case JsNull               => CirceJson.Null
       case JsBoolean(b)         => CirceJson.fromBoolean(b)
       case JsTrue               => CirceJson.True
@@ -73,13 +72,13 @@ object DeriveJson {
             )
       }
 
-    def encoder[A](format: Format[A]): Encoder[A] = new Encoder[A] {
+    private def encoder[A](format: Format[A]): Encoder[A] = new Encoder[A] {
 
       override def apply(a: A): CirceJson =
         toCirce(format.writes(a))
     }
 
-    def decoder[A](format: Format[A]): Decoder[A] = new Decoder[A] {
+    private def decoder[A](format: Format[A]): Decoder[A] = new Decoder[A] {
 
       override def apply(c: HCursor): Result[A] =
         format

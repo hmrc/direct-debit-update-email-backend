@@ -22,7 +22,7 @@ import ddUpdateEmail.crypto.CryptoFormat.OperationalCryptoFormat
 import ddUpdateEmail.models.StartEmailVerificationJourneyResult
 import ddUpdateEmail.models.journey.{Journey, JourneyId}
 import ddUpdateEmail.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.into
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.directdebitupdateemailbackend.actions.Actions
 import uk.gov.hmrc.directdebitupdateemailbackend.services.JourneyService
@@ -34,7 +34,7 @@ class UpdateStartVerificationJourneyResultController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateStartVerificationJourneyResult(journeyId: JourneyId): Action[StartEmailVerificationJourneyResult] =

@@ -27,10 +27,8 @@ object SjResponse {
 
   final case class Error(statusCode: Int, message: String) extends SjResponse
 
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val successFormat: OFormat[Success] = Json.format
+  given OFormat[Success] = Json.format
 
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val errorFormat: OFormat[Error] = Json.format
+  given OFormat[Error] = Json.format
 
 }

@@ -32,11 +32,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DirectDebitBackendService @Inject() (connector: DirectDebitBackendConnector)(implicit ec: ExecutionContext) {
+class DirectDebitBackendService @Inject() (connector: DirectDebitBackendConnector)(using ExecutionContext) {
 
-  implicit val cryptoFormat: CryptoFormat = NoOpCryptoFormat
+  given CryptoFormat = NoOpCryptoFormat
 
-  def getStatus(ddiNumber: DDINumber)(implicit hc: HeaderCarrier): Future[Option[GetBounceStatusResponse]] =
+  def getStatus(ddiNumber: DDINumber)(using HeaderCarrier): Future[Option[GetBounceStatusResponse]] =
     connector.getStatus(ddiNumber).map { httpResponse =>
       if (httpResponse.status === OK)
         httpResponse.json
@@ -74,8 +74,7 @@ object DirectDebitBackendService {
   private final case class GetStatusError(code: String, reason: String)
 
   private object GetStatusError {
-    @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[GetStatusError] = Json.reads
+    given Reads[GetStatusError] = Json.reads
   }
 
 }

@@ -21,7 +21,7 @@ import ddUpdateEmail.utils.DeriveJson
 import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.Format
 
-sealed trait StartEmailVerificationJourneyResult extends Product, Serializable
+sealed trait StartEmailVerificationJourneyResult extends Product, Serializable derives CanEqual
 
 object StartEmailVerificationJourneyResult {
 
