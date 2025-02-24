@@ -35,7 +35,7 @@ class JourneyController @Inject() (
 
   val findLatestJourneyBySessionId: Action[AnyContent] = Action.async { implicit request =>
     val sessionId: SessionId =
-      implicitly[HeaderCarrier].sessionId
+      summon[HeaderCarrier].sessionId
         .map(x => SessionId(x.value))
         .getOrElse(throw new RuntimeException("Missing required 'SessionId'"))
 
