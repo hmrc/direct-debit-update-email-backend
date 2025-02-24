@@ -33,25 +33,20 @@ import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.JourneyRepo
 import uk.gov.hmrc.directdebitupdateemailbackend.services.JourneyIdGenerator
 import uk.gov.hmrc.http.HeaderCarrier
+import org.mongodb.scala.ObservableFuture
 
 import java.time.format.DateTimeFormatter
 import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import javax.inject.Singleton
-import scala.annotation.nowarn
 import scala.concurrent.duration._
 import scala.util.Random
 
-trait ItSpec
-  extends AnyFreeSpecLike
-  with RichMatchers
-  with GuiceOneServerPerSuite
-  with WireMockSupport
-  with CommonBehaviour { self =>
+trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, WireMockSupport, CommonBehaviour { self =>
   private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
   def insertJourneyForTest(journey: Journey): Unit = journeyRepo.upsert(journey).futureValue
 
-  implicit def hcWithAuthorization: HeaderCarrier = HeaderCarrier(authorization = Some(TestData.bearerToken))
+  given hcWithAuthorization: HeaderCarrier = HeaderCarrier(authorization = Some(TestData.bearerToken))
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -65,13 +60,13 @@ trait ItSpec
   }
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
-    timeout  = scaled(Span(20, Seconds)),
+    timeout = scaled(Span(20, Seconds)),
     interval = scaled(Span(300, Millis))
   )
 
   lazy val frozenZonedDateTime: ZonedDateTime = {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
-    //the frozen time has to be in future otherwise the journeys will disappear from mongodb because of expiry index
+    // the frozen time has to be in future otherwise the journeys will disappear from mongodb because of expiry index
     LocalDateTime.parse("2057-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
   }
 
@@ -82,28 +77,23 @@ trait ItSpec
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def operationalCryptoFormat: OperationalCryptoFormat = OperationalCryptoFormat(testCrypto)
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def clock: Clock = self.clock
 
-    /**
-     * This one is randomised every time new test application is spawned. Thanks to that there will be no
-     * collisions in database when 2 tests insert journey.
-     */
+    /** This one is randomised every time new test application is spawned. Thanks to that there will be no collisions in
+      * database when 2 tests insert journey.
+      */
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def journeyIdGenerator(testJourneyIdGenerator: TestJourneyIdGenerator): JourneyIdGenerator = testJourneyIdGenerator
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testJourneyIdGenerator(): TestJourneyIdGenerator = {
-      val randomPart: String = Random.alphanumeric.take(5).mkString
+      val randomPart: String      = Random.alphanumeric.take(5).mkString
       val journeyIdPrefix: String = s"TestJourneyId-$randomPart-"
       new TestJourneyIdGenerator(journeyIdPrefix)
     }
@@ -112,23 +102,23 @@ trait ItSpec
 
   def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
 
-  val testServerPort: Int = 19001
+  val testServerPort: Int  = 19001
   val databaseName: String = "direct-debit-update-email-backend-it"
 
   def conf: Map[String, Any] = Map(
-    "mongodb.uri" -> s"mongodb://localhost:27017/$databaseName",
+    "mongodb.uri"                                                      -> s"mongodb://localhost:27017/$databaseName",
     "microservice.services.direct-debit-update-email-backend.protocol" -> "http",
-    "microservice.services.direct-debit-update-email-backend.host" -> "localhost",
-    "microservice.services.direct-debit-update-email-backend.port" -> testServerPort,
-    "microservice.services.direct-debit-backend.port" -> WireMockSupport.port,
-    "microservice.services.auth.port" -> WireMockSupport.port,
-    "microservice.services.internal-auth.port" -> WireMockSupport.port,
-    "auditing.consumer.baseUri.port" -> WireMockSupport.port,
-    "auditing.enabled" -> false,
-    "auditing.traceRequests" -> false
+    "microservice.services.direct-debit-update-email-backend.host"     -> "localhost",
+    "microservice.services.direct-debit-update-email-backend.port"     -> testServerPort,
+    "microservice.services.direct-debit-backend.port"                  -> WireMockSupport.port,
+    "microservice.services.auth.port"                                  -> WireMockSupport.port,
+    "microservice.services.internal-auth.port"                         -> WireMockSupport.port,
+    "auditing.consumer.baseUri.port"                                   -> WireMockSupport.port,
+    "auditing.enabled"                                                 -> false,
+    "auditing.traceRequests"                                           -> false
   )
 
-  //in tests use `app`
+  // in tests use `app`
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure(conf)
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
@@ -136,7 +126,7 @@ trait ItSpec
 
   object TestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
-      val sc = ServerConfig(port    = Some(testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
+      val sc = ServerConfig(port = Some(testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
     }
   }
@@ -145,9 +135,10 @@ trait ItSpec
     TestServerFactory.start(app)
 
   def encryptString(s: String, encrypter: Encrypter): String =
-    encrypter.encrypt(
-      PlainText("\"" + SensitiveString(s).decryptedValue + "\"")
-    ).value
+    encrypter
+      .encrypt(
+        PlainText("\"" + SensitiveString(s).decryptedValue + "\"")
+      )
+      .value
 
 }
-

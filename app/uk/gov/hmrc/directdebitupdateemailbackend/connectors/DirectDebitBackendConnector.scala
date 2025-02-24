@@ -26,12 +26,12 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DirectDebitBackendConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
+class DirectDebitBackendConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(using ExecutionContext) {
 
   private def getStatusUrl(ddiNumber: DDINumber): String =
     s"${appConfig.directDebitBackendBaseUrl}/direct-debit-backend/bounced-email/status/${ddiNumber.value}"
 
-  def getStatus(ddiNumber: DDINumber)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+  def getStatus(ddiNumber: DDINumber)(using HeaderCarrier): Future[HttpResponse] =
     httpClient.get(url"${getStatusUrl(ddiNumber)}").execute[HttpResponse]
 
 }

@@ -17,17 +17,19 @@
 package ddUpdateEmail.models
 
 import cats.Eq
+import ddUpdateEmail.utils.DeriveJson
+import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.Format
-import julienrf.json.derived
 
-sealed trait StartEmailVerificationJourneyResult extends Product with Serializable
+sealed trait StartEmailVerificationJourneyResult extends Product, Serializable derives CanEqual
 
 object StartEmailVerificationJourneyResult {
 
-  implicit val eq: Eq[StartEmailVerificationJourneyResult] = Eq.fromUniversalEquals
+  given Eq[StartEmailVerificationJourneyResult] = Eq.fromUniversalEquals
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[StartEmailVerificationJourneyResult] = derived.oformat()
+  given Format[StartEmailVerificationJourneyResult] =
+    DeriveJson.Circe.format(deriveCodec[StartEmailVerificationJourneyResult])
 
   final case class Ok(redirectUrl: String) extends StartEmailVerificationJourneyResult
 

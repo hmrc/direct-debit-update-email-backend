@@ -28,15 +28,18 @@ object DirectDebitBackendStub {
 
   type HttpStatus = Int
 
-  def stubGetBouncedEmailStatus(ddiNumber: DDINumber, responseStatus: HttpStatus, responseBody: Option[JsValue]): StubMapping =
+  def stubGetBouncedEmailStatus(
+    ddiNumber:      DDINumber,
+    responseStatus: HttpStatus,
+    responseBody:   Option[JsValue]
+  ): StubMapping =
     stubFor(
       get(urlPathEqualTo(getBouncedEmailStatusUrl(ddiNumber)))
-        .willReturn{
+        .willReturn {
           lazy val response = aResponse().withStatus(responseStatus)
           responseBody.fold(
             response
-          )(body =>
-            response.withBody(Json.prettyPrint(body)))
+          )(body => response.withBody(Json.prettyPrint(body)))
         }
     )
 

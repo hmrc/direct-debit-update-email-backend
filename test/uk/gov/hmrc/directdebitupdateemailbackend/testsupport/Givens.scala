@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,10 @@
 
 package uk.gov.hmrc.directdebitupdateemailbackend.testsupport
 
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.JsValue
 
-object JsonSyntax extends JsonSyntax
+object Givens {
 
-trait JsonSyntax {
+  given jsValueCanEqual: CanEqual[JsValue, JsValue] = CanEqual.derived
 
-  @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes", "org.wartremover.warts.PublicInference"))
-  implicit def toJsonOps(s: String): Object { def asJson: JsObject } = new {
-    def asJson: JsObject = Json.parse(s) match {
-      case d: JsObject => d
-      case _           => throw new RuntimeException(s"Cant parse as JsObject: $s ")
-    }
-  }
 }

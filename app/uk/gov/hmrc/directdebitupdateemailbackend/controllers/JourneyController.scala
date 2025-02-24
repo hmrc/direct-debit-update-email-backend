@@ -28,17 +28,14 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.ExecutionContext
 
 class JourneyController @Inject() (
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(
-    implicit
-    cryptoFormat: OperationalCryptoFormat, ec: ExecutionContext
-) extends BackendController(cc) {
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using OperationalCryptoFormat, ExecutionContext)
+    extends BackendController(cc) {
 
   val findLatestJourneyBySessionId: Action[AnyContent] = Action.async { implicit request =>
     val sessionId: SessionId =
-      implicitly[HeaderCarrier]
-        .sessionId
+      summon[HeaderCarrier].sessionId
         .map(x => SessionId(x.value))
         .getOrElse(throw new RuntimeException("Missing required 'SessionId'"))
 

@@ -40,7 +40,9 @@ class JourneyControllerSpec extends ItSpec {
     }
 
     "must return None if a journey cannot be found for a session id" in {
-      val result = connector.findLatestJourneyBySessionId()(HeaderCarrier(sessionId = Some(HttpSessionId(TestData.sessionId.value))))
+      val result = connector.findLatestJourneyBySessionId()(
+        HeaderCarrier(sessionId = Some(HttpSessionId(TestData.sessionId.value)))
+      )
 
       await(result) shouldBe None
     }
@@ -59,13 +61,13 @@ class JourneyControllerSpec extends ItSpec {
 
       // same session id, created later
       val journey2 = journey1.copy(
-        _id       = journeyIdGenerator.nextJourneyId(),
+        _id = journeyIdGenerator.nextJourneyId(),
         createdOn = journey1.createdOn.plusSeconds(1L)
       )
 
       // different session id
       val journey3 = journey1.copy(
-        _id       = journeyIdGenerator.nextJourneyId(),
+        _id = journeyIdGenerator.nextJourneyId(),
         sessionId = SessionId(journey1.sessionId.value + "0000")
       )
 
@@ -73,7 +75,9 @@ class JourneyControllerSpec extends ItSpec {
       await(journeyRepo.upsert(journey2)) shouldBe ()
       await(journeyRepo.upsert(journey3)) shouldBe ()
 
-      val result = connector.findLatestJourneyBySessionId()(HeaderCarrier(sessionId = Some(HttpSessionId(TestData.sessionId.value))))
+      val result = connector.findLatestJourneyBySessionId()(
+        HeaderCarrier(sessionId = Some(HttpSessionId(TestData.sessionId.value)))
+      )
       await(result) shouldBe Some(journey2)
     }
 

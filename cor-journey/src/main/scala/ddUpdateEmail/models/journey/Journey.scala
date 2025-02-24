@@ -18,13 +18,15 @@ package ddUpdateEmail.models.journey
 
 import ddUpdateEmail.crypto.CryptoFormat
 import ddUpdateEmail.models.{Email, EmailVerificationResult, Origin, StartEmailVerificationJourneyResult, TaxId, TaxRegime}
-import julienrf.json.derived
-import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
+import io.circe.generic.semiauto.deriveCodec
+import play.api.libs.json.{JsObject, JsValue, Json, OFormat, OWrites}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import ddUpdateEmail.utils.DeriveJson
+import ddUpdateEmail.utils.DeriveJson.Circe.codec
 
 import java.time.{Clock, Instant}
 
-sealed trait Journey {
+sealed trait Journey derives CanEqual {
   val _id: JourneyId
   val origin: Origin
   val createdOn: Instant
@@ -39,27 +41,29 @@ sealed trait Journey {
 object Journey {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[Journey] = {
-    @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    val defaultFormat: OFormat[Journey] = derived.oformat[Journey]()
+  given format(using cryptoFormat: CryptoFormat): OFormat[Journey] = {
+    val defaultFormat: OFormat[Journey] = DeriveJson.Circe.format(deriveCodec[Journey])
 
-    //we need to write some extra fields on the top of the structure so it's
-    //possible to index on them and use them in queries
+    // we need to write some extra fields on the top of the structure so it's
+    // possible to index on them and use them in queries
     val customWrites = OWrites[Journey](j =>
       defaultFormat.writes(j) ++ Json.obj(
-        "sessionId" -> j.sessionId.value,
-        "createdAt" -> MongoJavatimeFormats.instantFormat.writes(j.createdOn),
+        "sessionId"   -> j.sessionId.value,
+        "createdAt"   -> MongoJavatimeFormats.instantFormat.writes(j.createdOn),
         "lastUpdated" -> MongoJavatimeFormats.instantFormat.writes(j.lastUpdated)
-      ))
+      )
+    )
     OFormat(
-      defaultFormat,
+      defaultFormat.preprocess { case j: JsObject =>
+        j - "lastUpdated" - "createdAt" - "sessionId" - "_id"
+      },
       customWrites
     )
   }
 
   implicit class JourneyOps(private val j: Journey) extends AnyVal {
 
-    def json(implicit cryptoFormat: CryptoFormat): JsValue = Json.toJson(j)
+    def json(using CryptoFormat): JsValue = Json.toJson(j)
 
   }
 
@@ -82,66 +86,65 @@ object Journey {
   }
 
   final case class Started(
-      override val _id:          JourneyId,
-      override val origin:       Origin,
-      override val createdOn:    Instant,
-      override val sjRequest:    SjRequest,
-      override val sessionId:    SessionId,
-      override val taxRegime:    TaxRegime,
-      override val taxId:        Option[TaxId],
-      override val bouncedEmail: Email
+    override val _id:          JourneyId,
+    override val origin:       Origin,
+    override val createdOn:    Instant,
+    override val sjRequest:    SjRequest,
+    override val sessionId:    SessionId,
+    override val taxRegime:    TaxRegime,
+    override val taxId:        Option[TaxId],
+    override val bouncedEmail: Email
   ) extends Journey
-    with BeforeSelectedEmail
-    with BeforeEmailVerificationJourneyStarted
-    with BeforeEmailVerificationResult
+      with BeforeSelectedEmail
+      with BeforeEmailVerificationJourneyStarted
+      with BeforeEmailVerificationResult
 
   final case class SelectedEmail(
-      override val _id:           JourneyId,
-      override val origin:        Origin,
-      override val createdOn:     Instant,
-      override val sjRequest:     SjRequest,
-      override val sessionId:     SessionId,
-      override val taxRegime:     TaxRegime,
-      override val taxId:         Option[TaxId],
-      override val bouncedEmail:  Email,
-      override val selectedEmail: Email
+    override val _id:           JourneyId,
+    override val origin:        Origin,
+    override val createdOn:     Instant,
+    override val sjRequest:     SjRequest,
+    override val sessionId:     SessionId,
+    override val taxRegime:     TaxRegime,
+    override val taxId:         Option[TaxId],
+    override val bouncedEmail:  Email,
+    override val selectedEmail: Email
   ) extends Journey
-    with AfterSelectedEmail
-    with BeforeEmailVerificationJourneyStarted
-    with BeforeEmailVerificationResult
+      with AfterSelectedEmail
+      with BeforeEmailVerificationJourneyStarted
+      with BeforeEmailVerificationResult
 
   final case class EmailVerificationJourneyStarted(
-      override val _id:                                 JourneyId,
-      override val origin:                              Origin,
-      override val createdOn:                           Instant,
-      override val sjRequest:                           SjRequest,
-      override val sessionId:                           SessionId,
-      override val taxRegime:                           TaxRegime,
-      override val taxId:                               Option[TaxId],
-      override val bouncedEmail:                        Email,
-      override val selectedEmail:                       Email,
-      override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult
+    override val _id:                                 JourneyId,
+    override val origin:                              Origin,
+    override val createdOn:                           Instant,
+    override val sjRequest:                           SjRequest,
+    override val sessionId:                           SessionId,
+    override val taxRegime:                           TaxRegime,
+    override val taxId:                               Option[TaxId],
+    override val bouncedEmail:                        Email,
+    override val selectedEmail:                       Email,
+    override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult
   ) extends Journey
-    with AfterSelectedEmail
-    with AfterEmailVerificationJourneyStarted
-    with BeforeEmailVerificationResult
+      with AfterSelectedEmail
+      with AfterEmailVerificationJourneyStarted
+      with BeforeEmailVerificationResult
 
   final case class ObtainedEmailVerificationResult(
-      override val _id:                                 JourneyId,
-      override val origin:                              Origin,
-      override val createdOn:                           Instant,
-      override val sjRequest:                           SjRequest,
-      override val sessionId:                           SessionId,
-      override val taxRegime:                           TaxRegime,
-      override val taxId:                               Option[TaxId],
-      override val bouncedEmail:                        Email,
-      override val selectedEmail:                       Email,
-      override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult,
-      override val emailVerificationResult:             EmailVerificationResult
+    override val _id:                                 JourneyId,
+    override val origin:                              Origin,
+    override val createdOn:                           Instant,
+    override val sjRequest:                           SjRequest,
+    override val sessionId:                           SessionId,
+    override val taxRegime:                           TaxRegime,
+    override val taxId:                               Option[TaxId],
+    override val bouncedEmail:                        Email,
+    override val selectedEmail:                       Email,
+    override val startEmailVerificationJourneyResult: StartEmailVerificationJourneyResult,
+    override val emailVerificationResult:             EmailVerificationResult
   ) extends Journey
-    with AfterSelectedEmail
-    with AfterEmailVerificationJourneyStarted
-    with AfterEmailVerificationResult
+      with AfterSelectedEmail
+      with AfterEmailVerificationJourneyStarted
+      with AfterEmailVerificationResult
 
 }
-

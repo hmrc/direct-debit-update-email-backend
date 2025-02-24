@@ -18,7 +18,7 @@ package uk.gov.hmrc.directdebitupdateemailbackend.models
 
 import ddUpdateEmail.models.NextUrl
 
-sealed trait StartResult
+sealed trait StartResult derives CanEqual
 
 object StartResult {
 

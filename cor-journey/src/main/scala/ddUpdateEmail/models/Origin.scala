@@ -22,11 +22,11 @@ import play.api.libs.json.Format
 
 import scala.collection.immutable
 
-sealed trait Origin extends EnumEntry with Product with Serializable
+sealed trait Origin extends EnumEntry, Product, Serializable derives CanEqual
 
 object Origin extends Enum[Origin] {
 
-  implicit val format: Format[Origin] = EnumFormat(Origin)
+  given Format[Origin] = EnumFormat(Origin)
 
   case object BTA extends Origin
 

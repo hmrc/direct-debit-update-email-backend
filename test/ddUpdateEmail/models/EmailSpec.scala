@@ -22,8 +22,7 @@ import org.scalatest.freespec.AnyFreeSpecLike
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.RichMatchers
 
-class EmailSpec extends AnyFreeSpecLike
-  with RichMatchers {
+class EmailSpec extends AnyFreeSpecLike with RichMatchers {
 
   "Email" - {
 

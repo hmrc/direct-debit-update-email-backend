@@ -25,8 +25,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class JourneyService @Inject() (
-    journeyRepo: JourneyRepo
-)(implicit ec: ExecutionContext) {
+  journeyRepo: JourneyRepo
+)(using ExecutionContext) {
 
   def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] =
     journeyRepo.findLatestJourney(sessionId)

@@ -16,10 +16,11 @@
 
 package ddUpdateEmail.models
 
-import julienrf.json.derived
+import io.circe.generic.semiauto.deriveCodec
+import ddUpdateEmail.utils.DeriveJson
 import play.api.libs.json.OFormat
 
-sealed trait TaxId extends Product with Serializable {
+sealed trait TaxId extends Product, Serializable {
 
   val value: String
 
@@ -35,7 +36,6 @@ object TaxId {
 
   final case class Zsdl(value: String) extends TaxId
 
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[TaxId] = derived.oformat[TaxId]()
+  given OFormat[TaxId] = DeriveJson.Circe.format(deriveCodec[TaxId])
 
 }

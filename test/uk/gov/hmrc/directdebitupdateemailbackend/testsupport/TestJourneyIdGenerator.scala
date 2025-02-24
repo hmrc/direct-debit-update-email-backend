@@ -23,12 +23,12 @@ import java.util.concurrent.atomic.AtomicReference
 
 class TestJourneyIdGenerator(testJourneyIdPrefix: String) extends JourneyIdGenerator {
 
-  private val idIterator: Iterator[JourneyId] = LazyList.from(0).map(i => JourneyId(s"${testJourneyIdPrefix}${i.toString}")).iterator
-  private val nextJourneyIdCached = new AtomicReference[JourneyId](idIterator.next())
+  private val idIterator: Iterator[JourneyId] =
+    LazyList.from(0).map(i => JourneyId(s"$testJourneyIdPrefix${i.toString}")).iterator
+  private val nextJourneyIdCached             = new AtomicReference[JourneyId](idIterator.next())
 
   def readNextJourneyId(): JourneyId = nextJourneyIdCached.get()
 
-  override def nextJourneyId(): JourneyId = {
+  override def nextJourneyId(): JourneyId =
     nextJourneyIdCached.getAndSet(idIterator.next())
-  }
 }

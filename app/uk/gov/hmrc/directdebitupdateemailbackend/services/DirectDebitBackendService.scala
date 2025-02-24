@@ -32,26 +32,37 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DirectDebitBackendService @Inject() (connector: DirectDebitBackendConnector)(implicit ec: ExecutionContext) {
+class DirectDebitBackendService @Inject() (connector: DirectDebitBackendConnector)(using ExecutionContext) {
 
-  implicit val cryptoFormat: CryptoFormat = NoOpCryptoFormat
+  given CryptoFormat = NoOpCryptoFormat
 
-  def getStatus(ddiNumber: DDINumber)(implicit hc: HeaderCarrier): Future[Option[GetBounceStatusResponse]] =
-    connector.getStatus(ddiNumber).map{ httpResponse =>
+  def getStatus(ddiNumber: DDINumber)(using HeaderCarrier): Future[Option[GetBounceStatusResponse]] =
+    connector.getStatus(ddiNumber).map { httpResponse =>
       if (httpResponse.status === OK)
-        httpResponse.json.validate[GetBounceStatusResponse].fold(
-          _ => Errors.throwServerErrorException("Got OK status but could not parse body"),
-          Some(_)
-        )
+        httpResponse.json
+          .validate[GetBounceStatusResponse]
+          .fold(
+            _ => Errors.throwServerErrorException("Got OK status but could not parse body"),
+            Some(_)
+          )
       else if (httpResponse.status === NOT_FOUND)
-        httpResponse.json.validate[GetStatusError].fold(
-          _ => Errors.throwServerErrorException(s"Got unexpected response http status code: ${httpResponse.status.toString}"),
-          error =>
-            if (error.code === getStatusNotFoundCode) None
-            else Errors.throwServerErrorException(s"Received NOT_FOUND with response body with unknown code: ${error.code}")
-        )
+        httpResponse.json
+          .validate[GetStatusError]
+          .fold(
+            _ =>
+              Errors.throwServerErrorException(
+                s"Got unexpected response http status code: ${httpResponse.status.toString}"
+              ),
+            error =>
+              if (error.code === getStatusNotFoundCode) None
+              else
+                Errors
+                  .throwServerErrorException(s"Received NOT_FOUND with response body with unknown code: ${error.code}")
+          )
       else
-        throw Errors.throwServerErrorException(s"Got unexpected response http status code: ${httpResponse.status.toString}")
+        throw Errors.throwServerErrorException(
+          s"Got unexpected response http status code: ${httpResponse.status.toString}"
+        )
     }
 
   private val getStatusNotFoundCode: String = "NOT_FOUND"
@@ -63,8 +74,7 @@ object DirectDebitBackendService {
   private final case class GetStatusError(code: String, reason: String)
 
   private object GetStatusError {
-    @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[GetStatusError] = Json.reads
+    given Reads[GetStatusError] = Json.reads
   }
 
 }

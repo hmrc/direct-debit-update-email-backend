@@ -31,7 +31,8 @@ class AppConfig @Inject() (servicesConfig: ServicesConfig, config: Configuration
 
   val directDebitBackendBaseUrl: String = servicesConfig.baseUrl("direct-debit-backend")
 
-  val allowedTaxRegimes: Set[TaxRegime] = config.get[Seq[String]]("allowed-tax-regimes").map(TaxRegime.withNameInsensitive).toSet
+  val allowedTaxRegimes: Set[TaxRegime] =
+    config.get[Seq[String]]("allowed-tax-regimes").map(TaxRegime.withNameInsensitive).toSet
 
   val journeyRepoTtl: FiniteDuration = config.get[FiniteDuration]("repo.journey.ttl")
 

@@ -29,24 +29,26 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class StartService @Inject() (
-    appConfig:                 AppConfig,
-    directDebitBackendService: DirectDebitBackendService,
-    journeyIdGenerator:        JourneyIdGenerator,
-    clock:                     Clock,
-    journeyRepo:               JourneyRepo
-)(implicit ec: ExecutionContext) {
+  appConfig:                 AppConfig,
+  directDebitBackendService: DirectDebitBackendService,
+  journeyIdGenerator:        JourneyIdGenerator,
+  clock:                     Clock,
+  journeyRepo:               JourneyRepo
+)(using ExecutionContext) {
 
   private implicit def toFuture(r: StartResult): Future[StartResult] = Future.successful(r)
 
-  private val nextUrl = NextUrl(s"${appConfig.startNextUrlBase}/direct-debit-verify-email/check-or-change-email-address")
+  private val nextUrl = NextUrl(
+    s"${appConfig.startNextUrlBase}/direct-debit-verify-email/check-or-change-email-address"
+  )
 
-  def start(origin: Origin, sjRequest: SjRequest)(implicit hc: HeaderCarrier): Future[StartResult] =
+  def start(origin: Origin, sjRequest: SjRequest)(using hc: HeaderCarrier): Future[StartResult] =
     hc.sessionId match {
       case None =>
         StartResult.NoSessionId
 
       case Some(sessionId) =>
-        directDebitBackendService.getStatus(sjRequest.ddiNumber).flatMap{
+        directDebitBackendService.getStatus(sjRequest.ddiNumber).flatMap {
           case None =>
             StartResult.NoDirectDebitFound
 
@@ -63,20 +65,23 @@ class StartService @Inject() (
     }
 
   private def initiateSession(
-      origin:    Origin,
-      sjRequest: SjRequest,
-      sessionId: SessionId,
-      status:    GetBounceStatusResponse
+    origin:    Origin,
+    sjRequest: SjRequest,
+    sessionId: SessionId,
+    status:    GetBounceStatusResponse
   ): Future[Unit] = {
     val journey = Journey.Started(
       journeyIdGenerator.nextJourneyId(),
       origin,
       createdOn = Instant.now(clock),
-      sjRequest, sessionId, status.taxRegime, status.taxId, status.email
+      sjRequest,
+      sessionId,
+      status.taxRegime,
+      status.taxId,
+      status.email
     )
 
     journeyRepo.upsert(journey)
   }
 
 }
-

@@ -30,29 +30,32 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SjController @Inject() (
-    startService: StartService,
-    auth:         BackendAuthComponents,
-    cc:           ControllerComponents
-)(implicit ex: ExecutionContext) extends BackendController(cc) {
+  startService: StartService,
+  auth:         BackendAuthComponents,
+  cc:           ControllerComponents
+)(using ExecutionContext)
+    extends BackendController(cc) {
 
   private def internalAuthPermission(origin: String): Predicate.Permission = Predicate.Permission(
     resource = Resource(
-      resourceType     = ResourceType("direct-debit-update-email-backend"),
+      resourceType = ResourceType("direct-debit-update-email-backend"),
       resourceLocation = ResourceLocation(s"direct-debit-update-email/$origin/start")
     ),
-    action   = IAAction("WRITE")
+    action = IAAction("WRITE")
   )
 
-  private val btaPermission: Predicate.Permission = internalAuthPermission("bta")
+  private val btaPermission: Predicate.Permission  = internalAuthPermission("bta")
   private val payePermission: Predicate.Permission = internalAuthPermission("epaye")
 
-  val startBta: Action[JsValue] = auth.authorizedAction(btaPermission).compose(Action(parse.json)).async { implicit request =>
-    doStart(Origin.BTA, request.body)
-  }
+  val startBta: Action[JsValue] =
+    auth.authorizedAction(btaPermission).compose(Action(parse.json)).async { implicit request =>
+      doStart(Origin.BTA, request.body)
+    }
 
-  val startEpaye: Action[JsValue] = auth.authorizedAction(payePermission).compose(Action(parse.json)).async { implicit request =>
-    doStart(Origin.EpayeService, request.body)
-  }
+  val startEpaye: Action[JsValue] =
+    auth.authorizedAction(payePermission).compose(Action(parse.json)).async { implicit request =>
+      doStart(Origin.EpayeService, request.body)
+    }
 
   private def doStart(origin: Origin, requestJson: JsValue)(implicit request: Request[_]): Future[Result] =
     requestJson.validate[SjRequest] match {
@@ -64,14 +67,14 @@ class SjController @Inject() (
           case StartResult.IsNotBounced        => Conflict(emailNotBouncedErrorBody)
           case StartResult.Started(nextUrl)    => Created(Json.toJson(SjResponse.Success(nextUrl)))
         }
-      case JsError(_) =>
+      case JsError(_)              =>
         BadRequest(jsonCannotBeParsedErrorBody)
     }
 
-  private val noSessionIdErrorBody = Json.toJson(SjResponse.Error(BAD_REQUEST, "session ID not found"))
-  private val noDirectDebitFoundErrorBody = Json.toJson(SjResponse.Error(NOT_FOUND, "direct debit not found"))
+  private val noSessionIdErrorBody         = Json.toJson(SjResponse.Error(BAD_REQUEST, "session ID not found"))
+  private val noDirectDebitFoundErrorBody  = Json.toJson(SjResponse.Error(NOT_FOUND, "direct debit not found"))
   private val taxRegimeNotAllowedErrorBody = Json.toJson(SjResponse.Error(FORBIDDEN, "tax regime not allowed"))
-  private val emailNotBouncedErrorBody = Json.toJson(SjResponse.Error(CONFLICT, "email not bounced"))
-  private val jsonCannotBeParsedErrorBody = Json.toJson(SjResponse.Error(BAD_REQUEST, "request body cannot be parsed"))
+  private val emailNotBouncedErrorBody     = Json.toJson(SjResponse.Error(CONFLICT, "email not bounced"))
+  private val jsonCannotBeParsedErrorBody  = Json.toJson(SjResponse.Error(BAD_REQUEST, "request body cannot be parsed"))
 
 }

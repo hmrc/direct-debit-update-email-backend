@@ -22,40 +22,39 @@ import play.api.libs.json._
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.Repo._
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.MongoComponent
+import org.mongodb.scala.ObservableFuture
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 abstract class Repo[ID, A: ClassTag](
-    collectionName: String,
-    mongoComponent: MongoComponent,
-    indexes:        Seq[IndexModel],
-    extraCodecs:    Seq[Codec[_]],
-    replaceIndexes: Boolean         = false
-)(implicit
-    domainFormat: OFormat[A],
+  collectionName:   String,
+  mongoComponent:   MongoComponent,
+  indexes:          Seq[IndexModel],
+  extraCodecs:      Seq[Codec[_]],
+  replaceIndexes:   Boolean = false
+)(using
+  domainFormat:     OFormat[A],
   executionContext: ExecutionContext,
   id:               Id[ID],
   idExtractor:      IdExtractor[A, ID]
-)
-  extends PlayMongoRepository[A](
-    mongoComponent = mongoComponent,
-    collectionName = collectionName,
-    domainFormat   = domainFormat,
-    indexes        = indexes,
-    replaceIndexes = replaceIndexes,
-    extraCodecs    = extraCodecs
-  ) {
+) extends PlayMongoRepository[A](
+      mongoComponent = mongoComponent,
+      collectionName = collectionName,
+      domainFormat = domainFormat,
+      indexes = indexes,
+      replaceIndexes = replaceIndexes,
+      extraCodecs = extraCodecs
+    ) {
 
-  /**
-   * Update or Insert (UpSert)
-   */
+  /** Update or Insert (UpSert)
+    */
   def upsert(a: A): Future[Unit] = collection
     .replaceOne(
-      filter      = Filters.eq("_id", id.value(idExtractor.id(a))),
+      filter = Filters.eq("_id", id.value(idExtractor.id(a))),
       replacement = a,
-      options     = ReplaceOptions().upsert(true)
+      options = ReplaceOptions().upsert(true)
     )
     .toFuture()
     .map(_ => ())
