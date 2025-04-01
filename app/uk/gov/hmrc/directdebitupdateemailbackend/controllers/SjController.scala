@@ -57,7 +57,7 @@ class SjController @Inject() (
       doStart(Origin.EpayeService, request.body)
     }
 
-  private def doStart(origin: Origin, requestJson: JsValue)(implicit request: Request[_]): Future[Result] =
+  private def doStart(origin: Origin, requestJson: JsValue)(implicit request: Request[?]): Future[Result] =
     requestJson.validate[SjRequest] match {
       case JsSuccess(sjRequest, _) =>
         startService.start(origin, sjRequest).map {

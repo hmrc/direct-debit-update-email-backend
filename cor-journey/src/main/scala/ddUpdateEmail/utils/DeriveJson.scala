@@ -54,7 +54,7 @@ object DeriveJson {
       case JsArray(value)       => CirceJson.fromValues(value.map(toCirce))
       case JsObject(underlying) =>
         CirceJson.fromJsonObject(
-          JsonObject(underlying.map { case (k, v) => k -> toCirce(v) }.toSeq: _*)
+          JsonObject(underlying.map { case (k, v) => k -> toCirce(v) }.toSeq*)
         )
     }
 
