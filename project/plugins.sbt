@@ -5,9 +5,9 @@ resolvers += Resolver.typesafeRepo("releases")
 
 
 addSbtPlugin("uk.gov.hmrc"       % "sbt-auto-build"     % "3.24.0")
-addSbtPlugin("uk.gov.hmrc"       % "sbt-distributables" % "2.5.0")
+addSbtPlugin("uk.gov.hmrc"       % "sbt-distributables" % "2.6.0")
 addSbtPlugin("org.playframework" % "sbt-plugin"         % "3.0.6")
-addSbtPlugin("org.scoverage"     % "sbt-scoverage"      % "2.0.11")
+addSbtPlugin("org.scoverage"     % "sbt-scoverage"      % "2.3.1")
 addSbtPlugin("org.scalameta"     % "sbt-scalafmt"       % "2.4.0")
-addSbtPlugin("org.wartremover"   % "sbt-wartremover"    % "3.2.5")
+addSbtPlugin("org.wartremover"   % "sbt-wartremover"    % "3.2.7")
 addSbtPlugin("com.timushev.sbt"  % "sbt-updates"        % "0.6.4")
