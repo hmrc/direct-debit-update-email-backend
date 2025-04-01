@@ -55,7 +55,7 @@ trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, Wire
     ()
   }
 
-  implicit val testCrypto: Encrypter with Decrypter = new AesCrypto {
+  implicit val testCrypto: Encrypter & Decrypter = new AesCrypto {
     override protected val encryptionKey: String = "P5xsJ9Nt+quxGZzB4DeLfw=="
   }
 
