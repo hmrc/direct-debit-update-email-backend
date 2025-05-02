@@ -25,7 +25,7 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.Helpers._
-import play.api.test.{DefaultTestServerFactory, RunningServer}
+import play.api.test.{DefaultTestServerFactory, TestServerFactory}
 import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import uk.gov.hmrc.crypto.{AesCrypto, Decrypter, Encrypter, PlainText}
@@ -124,15 +124,14 @@ trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, Wire
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
     .build()
 
-  object TestServerFactory extends DefaultTestServerFactory {
+  object CustomTestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
       val sc = ServerConfig(port = Some(testServerPort), sslPort = None, mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
     }
   }
 
-  override implicit protected lazy val runningServer: RunningServer =
-    TestServerFactory.start(app)
+  override protected def testServerFactory: TestServerFactory = CustomTestServerFactory
 
   def encryptString(s: String, encrypter: Encrypter): String =
     encrypter
