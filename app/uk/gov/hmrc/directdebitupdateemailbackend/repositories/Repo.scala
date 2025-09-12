@@ -22,7 +22,6 @@ import play.api.libs.json._
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.Repo._
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.MongoComponent
-import org.mongodb.scala.ObservableFuture
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
