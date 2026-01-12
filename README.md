@@ -1,7 +1,7 @@
 
 # direct-debit-update-email-backend
 
-This service is built using Scala (3.x.x) and the Play framework (3.0.6).
+This service is built using Scala (3.x.x) and the Play framework.
 It uses a dependency called [chimney](https://github.com/scalalandio/chimney) for boilerplate-free data transformations.
 It uses linting tools such as WartRemover and Sclariform.
 It also uses the sbt updates plugin - to ensure that compilation fails if dependencies are not up-to-date.
