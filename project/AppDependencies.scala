@@ -11,7 +11,7 @@ object AppDependencies {
   private val catsVersion = "2.13.0"
   private val cryptoVersion = "8.4.0"
   private val playJsonDerivedCodesVersion = "10.1.0"
-  private val chimneyVersion = "2.1.0"
+  private val chimneyVersion = "1.11.0"
   private val circeVersion = "0.14.17"
 
   lazy val microserviceDependencies: Seq[ModuleID] = {
