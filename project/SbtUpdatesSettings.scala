@@ -13,7 +13,7 @@ object SbtUpdatesSettings {
     // error on 1.7.2
     dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum"),
     dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum-play"),
-    dependencyUpdatesFilter -= moduleFilter("io.scalaland")
+    dependencyUpdatesFilter -= moduleFilter("io.circe")
   )
 
 }
