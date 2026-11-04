@@ -12,7 +12,8 @@ object SbtUpdatesSettings {
     // java.lang.NoSuchMethodError: 'scala.Option play.api.libs.json.JsBoolean$.unapply(play.api.libs.json.JsBoolean)'
     // error on 1.7.2
     dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum"),
-    dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum-play")
+    dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum-play"),
+    dependencyUpdatesFilter -= moduleFilter("io.scalaland")
   )
 
 }
