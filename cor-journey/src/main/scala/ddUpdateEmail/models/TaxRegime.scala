@@ -45,6 +45,9 @@ object TaxRegime extends PlayEnum[TaxRegime] {
     */
   case object Paye extends TaxRegime
 
+  /** Climate Change Levy */
+  case object Ccl extends TaxRegime
+
   override val values: immutable.IndexedSeq[TaxRegime] = findValues
 
 }

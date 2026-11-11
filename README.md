@@ -36,6 +36,7 @@ Acronyms used in a codebase. To speed up writing and reading.
 | Bta       | Business Tax Account - client app                             |
 | Epaye     | Employers' Pay as you earn - tax type                         |
 | PAYE      | Pay as you earn - tax type - often interchangeable with Epaye |
+| CCL       | Climate Change Levy                                           |
 | Bounced   | Can an email be successfully sent to an email                 | 
 
 ---
@@ -44,6 +45,7 @@ Acronyms used in a codebase. To speed up writing and reading.
 
 The current list of supported tax regimes is:
 * paye
+* ccl
 
 Current up-to-date list can be found in [application.conf](https://github.com/hmrc/direct-debit-update-email-backend/blob/main/conf/application.conf) under the key `allowed-tax-regimes`
 

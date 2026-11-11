@@ -17,7 +17,7 @@
 package uk.gov.hmrc.directdebitupdateemailbackend.models
 
 import ddUpdateEmail.crypto.CryptoFormat
-import ddUpdateEmail.models.TaxId.{EmpRef, Vrn, Zppt, Zsdl}
+import ddUpdateEmail.models.TaxId.{EmpRef, Vrn, Zccl, Zppt, Zsdl}
 import ddUpdateEmail.models.{Email, TaxId, TaxRegime}
 import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 
@@ -42,6 +42,7 @@ object GetBounceStatusResponse {
                           case "empref" => JsSuccess(EmpRef(value))
                           case "zppt"   => JsSuccess(Zppt(value))
                           case "zsdl"   => JsSuccess(Zsdl(value))
+                          case "zccl"   => JsSuccess(Zccl(value))
                           case other    => JsError(s"Unrecognised type type '$other'")
                         }
         } yield taxId

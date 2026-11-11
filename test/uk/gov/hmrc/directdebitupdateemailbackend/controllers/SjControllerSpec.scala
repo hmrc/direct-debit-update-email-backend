@@ -17,12 +17,12 @@
 package uk.gov.hmrc.directdebitupdateemailbackend.controllers
 
 import org.apache.pekko.stream.Materializer
-import ddUpdateEmail.models.TaxId.EmpRef
+import ddUpdateEmail.models.TaxId.{EmpRef, Zccl}
 import ddUpdateEmail.models.{Origin, TaxRegime}
 import ddUpdateEmail.models.journey.Journey
 import play.api.libs.json.{JsNull, JsNumber, JsValue, Json}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.directdebitupdateemailbackend.repositories.JourneyRepo
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.FakeRequestUtils.FakeRequestOps
 import uk.gov.hmrc.directdebitupdateemailbackend.testsupport.stubs.{DirectDebitBackendStub, InternalAuthStub}
@@ -37,6 +37,11 @@ class SjControllerSpec extends ItSpec {
   lazy implicit val mat: Materializer = app.injector.instanceOf[Materializer]
 
   lazy val journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
+
+  val allowedTaxRegimes = Seq(
+    (TaxRegime.Paye, EmpRef("12345"), "empref"),
+    (TaxRegime.Ccl, Zccl("ZACCL1234567890"), "zccl")
+  )
 
   "SjController" - {
 
@@ -124,32 +129,34 @@ class SjControllerSpec extends ItSpec {
           InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
         }
 
-        "return a 403 (FORBIDDEN) if the direct debit is for a tax regime which is not allowed" in {
-          InternalAuthStub.authorise()
-          DirectDebitBackendStub.stubGetBouncedEmailStatus(
-            TestData.ddiNumber,
-            OK,
-            Some(
-              Json.parse(
-                s"""{
-                    |  "isBounced": true,
-                    |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
-                    |  "taxRegime": "ppt"
-                    |}""".stripMargin
+        TaxRegime.values.filter(!allowedTaxRegimes.map(_._1).contains(_)).foreach { taxRegime =>
+          s"return a 403 (FORBIDDEN) if the direct debit is for a tax regime which is not allowed (${taxRegime.entryName})" in {
+            InternalAuthStub.authorise()
+            DirectDebitBackendStub.stubGetBouncedEmailStatus(
+              TestData.ddiNumber,
+              OK,
+              Some(
+                Json.parse(
+                  s"""{
+                     |  "isBounced": true,
+                     |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
+                     |  "taxRegime": "${taxRegime.entryName}"
+                     |}""".stripMargin
+                )
               )
             )
-          )
 
-          val result = doStart(validFakeRequest)
-          status(result) shouldBe FORBIDDEN
-          contentAsJson(result) shouldBe Json.parse(
-            """{
-                  |  "statusCode": 403,
-                  |  "message": "tax regime not allowed"
-                  |}""".stripMargin
-          )
+            val result = doStart(validFakeRequest)
+            status(result) shouldBe FORBIDDEN
+            contentAsJson(result) shouldBe Json.parse(
+              """{
+                |  "statusCode": 403,
+                |  "message": "tax regime not allowed"
+                |}""".stripMargin
+            )
 
-          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+            InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+          }
         }
 
         "return a 409 (CONFLICT) if the email is not bounced" in {
@@ -173,9 +180,9 @@ class SjControllerSpec extends ItSpec {
 
           contentAsJson(result) shouldBe Json.parse(
             """{
-                  |  "statusCode": 409,
-                  |  "message": "email not bounced"
-                  |}""".stripMargin
+                |  "statusCode": 409,
+                |  "message": "email not bounced"
+                |}""".stripMargin
           )
           InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
         }
@@ -193,50 +200,51 @@ class SjControllerSpec extends ItSpec {
             InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
           }
 
-        "return a 201 (CREATED) if session has been created" in {
-          val empRef = EmpRef("12345")
-          InternalAuthStub.authorise()
-          DirectDebitBackendStub.stubGetBouncedEmailStatus(
-            TestData.ddiNumber,
-            OK,
-            Some(
-              Json.parse(
-                s"""{
-                     |  "isBounced": true,
-                     |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
-                     |  "taxRegime": "paye",
-                     |  "taxId": {
-                     |    "type": "empref",
-                     |    "value": "${empRef.value}"
-                     |  }
-                     |}""".stripMargin
+        allowedTaxRegimes.foreach { (taxRegime, taxId, taxIdType) =>
+          s"return a 201 (CREATED) if session has been created for an allowed tax regime (${taxRegime.entryName})" in {
+            InternalAuthStub.authorise()
+            DirectDebitBackendStub.stubGetBouncedEmailStatus(
+              TestData.ddiNumber,
+              OK,
+              Some(
+                Json.parse(
+                  s"""{
+                       |  "isBounced": true,
+                       |  "email": "${TestData.bouncedEmail.value.decryptedValue}",
+                       |  "taxRegime": "${taxRegime.entryName}",
+                       |  "taxId": {
+                       |    "type": "$taxIdType",
+                       |    "value": "${taxId.value}"
+                       |  }
+                       |}""".stripMargin
+                )
               )
             )
-          )
 
-          val journeyId = journeyIdGenerator.readNextJourneyId()
-          val result    = doStart(validFakeRequest)
+            val journeyId = journeyIdGenerator.readNextJourneyId()
+            val result    = doStart(validFakeRequest)
 
-          status(result) shouldBe CREATED
-          val body = contentAsJson(result)
-          body shouldBe Json.parse(
-            """{ "nextUrl": "http://localhost:10801/direct-debit-verify-email/check-or-change-email-address" }"""
-          )
-
-          await(journeyRepo.findLatestJourney(TestData.sessionId)) shouldBe Some(
-            Journey.Started(
-              journeyId,
-              origin,
-              frozenZonedDateTime.toInstant,
-              TestData.sjRequest,
-              TestData.sessionId,
-              TaxRegime.Paye,
-              Some(empRef),
-              TestData.bouncedEmail
+            status(result) shouldBe CREATED
+            val body = contentAsJson(result)
+            body shouldBe Json.parse(
+              """{ "nextUrl": "http://localhost:10801/direct-debit-verify-email/check-or-change-email-address" }"""
             )
-          )
 
-          InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+            await(journeyRepo.findLatestJourney(TestData.sessionId)) shouldBe Some(
+              Journey.Started(
+                journeyId,
+                origin,
+                frozenZonedDateTime.toInstant,
+                TestData.sjRequest,
+                TestData.sessionId,
+                taxRegime,
+                Some(taxId),
+                TestData.bouncedEmail
+              )
+            )
+
+            InternalAuthStub.ensureAuthoriseCalledForInternalAuth(internalAuthResourceLocation)
+          }
         }
 
       }
