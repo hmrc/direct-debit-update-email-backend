@@ -36,6 +36,8 @@ object TaxId {
 
   final case class Zsdl(value: String) extends TaxId
 
+  final case class Zccl(value: String) extends TaxId
+
   given OFormat[TaxId] = DeriveJson.Circe.format(deriveCodec[TaxId])
 
 }
